@@ -4,8 +4,14 @@ from "react";
 import NetworkSelector 
 from "./NetworkSelector";
 
-const Quick_Top_Up = 
-["100", "500", "1000", "2000", "3000", "5000"];
+const Quick_Top_Up = [
+  { amount: 100, cashback: 1 },
+  { amount: 500, cashback: 5 },
+  { amount: 1000, cashback: 10 },
+  { amount: 2000, cashback: 20 },
+  { amount: 3000, cashback: 30 },
+  { amount: 5000, cashback: 50 },
+];
 
 export default function
 
@@ -234,29 +240,7 @@ AirtimeForm()
           Enter Amount
           </label>
 
-        <div className=
-        "amount-grid">
-
-          {Quick_Top_Up.map((amt) => 
-          
-          (
-
-            <button
-
-              type="button"
-              key={amt}
-              className={`amount-btn ${amount === amt ? "selected" : ""}`}
-              onClick={() => setAmount(amt)}
-
-            >
-              ₦{Number(amt).toLocaleString()}
-
-            </button>
-
-
-          ))}
-
-        </div>
+        
 
         <input
           type=
@@ -390,6 +374,40 @@ AirtimeForm()
         </div>
 
       )}
+
+
+
+      <div className="quick-topup">
+
+  <h3>Quick Top Up</h3>
+
+  <div className="quick-topup-grid">
+
+    {Quick_Top_Up.map((topup)=> (
+
+      <button
+        key={topup.amount}
+        type="button"
+        className="quick-topup-btn"
+        onClick={() => setAmount(topup.amount)}
+      >
+
+        <strong>
+          ₦{topup.amount.toLocaleString()}.00
+        </strong>
+
+        <span>
+          ₦{topup.cashback.toLocaleString()}.00 cashback
+        </span>
+
+      </button>
+
+    ))}
+
+  </div>
+
+
+</div>
 
     </form>
 

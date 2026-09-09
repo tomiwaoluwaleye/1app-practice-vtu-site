@@ -426,6 +426,7 @@ app.post
         reference: transactionReference,
 
       },
+
       {
 
         headers: 
@@ -441,6 +442,10 @@ app.post
       }
       
     );
+
+
+   
+
 
 
 
@@ -725,9 +730,120 @@ app.post("/api/data",
 
 });
 
-app.listen(PORT,
-   () =>
-     {
-  console.log(`Server running on http://localhost:${PORT}`);
 
+
+// ELECTRICITY METER VERIFICATION //
+
+app.get("/api/verify-electricity", async (req, res) => {
+
+  try {
+
+    const { provider, meterno } = req.query;
+
+
+    // VALIDATION /
+
+    if (!provider || !meterno) {
+
+      return res.status(400).json({
+
+        status: false,
+        message: "Electricity provider and meter number are required.",
+
+      });
+
+    }
+
+
+    console.log("Electricity meter verification request:", {
+
+      provider,
+      meterno,
+
+    });
+
+
+    // SEND REQUEST TO 1APP
+
+    const response = await axios.get(
+
+      `${process.env.ONEAPP_BASE_URL}/verifyelect`,
+
+      {
+
+        params: {
+
+          provider,
+          meterno,
+
+        },
+
+        headers: {
+
+          Authorization:
+            `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
+
+        },
+
+      }
+
+    );
+
+
+    // LOG 1APP RESPONSE
+
+    console.log("1app meter verification response:");
+
+    console.log(response.data);
+
+
+    // SEND RESPONSE TO FRONTEND
+
+    return res.json(response.data);
+
+  }
+
+
+  catch (error) {
+
+    console.error("Electricity meter verification error:");
+
+
+    if (error.response) {
+
+      console.error(error.response.data);
+
+
+      return res.status(error.response.status).json({
+
+        status: false,
+
+        message:
+          error.response.data?.message ||
+          "Unable to verify electricity meter.",
+
+        error: error.response.data,
+
+      });
+
+    }
+
+
+    console.error(error.message);
+
+
+    return res.status(500).json({
+
+      status: false,
+
+      message: "Unable to verify electricity meter.",
+
+    });
+
+  }
+
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
