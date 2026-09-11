@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 
 import AirtimeForm from "../components/AirtimeForm";
 import Data from "../components/Data";
 import ElectricityForm from "../components/ElectricityForm";
+import CableTVForm from "../components/CableTVForm";
 
 const PAYMENT_SERVICES = [
   {
@@ -23,6 +25,14 @@ const PAYMENT_SERVICES = [
     title: "Electricity",
     description: "Pay your electricity bill securely and easily.",
   },
+
+  {
+  id: "cable",
+  icon: "📺",
+  title: "Cable TV",
+  description: "Subscribe to DStv, GOtv and Startimes.",
+  },
+
 ];
 
 export default function Payments() {
@@ -165,6 +175,10 @@ export default function Payments() {
 
             {paymentType === "electricity" && (
               <ElectricityForm />
+            )}
+
+            {paymentType === "cable" && (
+              <CableTVForm />
             )}
 
           </div>

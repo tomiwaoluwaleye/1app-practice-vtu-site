@@ -735,114 +735,171 @@ app.post("/api/data",
 // ELECTRICITY METER VERIFICATION //
 
 app.get("/api/verify-electricity", async (req, res) => {
-
   try {
-
     const { provider, meterno } = req.query;
 
-
-    // VALIDATION /
-
     if (!provider || !meterno) {
-
       return res.status(400).json({
-
         status: false,
         message: "Electricity provider and meter number are required.",
-
       });
-
     }
 
-
     console.log("Electricity meter verification request:", {
-
       provider,
       meterno,
-
     });
 
-
-    // SEND REQUEST TO 1APP
-
     const response = await axios.get(
-
       `${process.env.ONEAPP_BASE_URL}/verifyelect`,
-
       {
-
         params: {
-
           provider,
           meterno,
-
         },
-
         headers: {
-
-          Authorization:
-            `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
-
+          Authorization: `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
         },
-
       }
-
     );
 
-
-    // LOG 1APP RESPONSE
-
-    console.log("1app meter verification response:");
-
+    console.log("1app electricity verification response:");
     console.log(response.data);
 
-
-    // SEND RESPONSE TO FRONTEND
-
     return res.json(response.data);
-
-  }
-
-
-  catch (error) {
-
-    console.error("Electricity meter verification error:");
-
+  } catch (error) {
+    console.error("Electricity verification error:");
 
     if (error.response) {
-
       console.error(error.response.data);
 
-
       return res.status(error.response.status).json({
-
         status: false,
-
         message:
           error.response.data?.message ||
           "Unable to verify electricity meter.",
-
         error: error.response.data,
-
       });
-
     }
-
 
     console.error(error.message);
 
-
     return res.status(500).json({
-
       status: false,
+      message: "Unable to connect to the electricity service.",
+    });
+  }
+});
 
-      message: "Unable to verify electricity meter.",
 
+app.post("/api/electricity", async (req, res) => {
+  try {
+    const { meterno, metername, provider, amount, vendtype } = req.body;
+
+    if (!meterno || !metername || !provider || !amount || !vendtype) {
+      return res.status(400).json({
+        status: false,
+        message: "Meter number, meter name, provider, amount and meter type are required.",
+      });
+    }
+
+    const cleanAmount = String(amount).replace(/,/g, "").trim();
+
+    if (Number(cleanAmount) <= 0) {
+      return res.status(400).json({
+        status: false,
+        message: "Amount must be greater than zero.",
+      });
+    }
+
+    const response = await axios.post(
+      `${process.env.ONEAPP_BASE_URL}/electricity`,
+      {
+        meterno,
+        metername,
+        provider,
+        amount: cleanAmount,
+        vendtype,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.ONEAPP_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("Electricity purchase response:", response.data);
+
+    return res.json(response.data);
+  } catch (error) {
+    console.error(
+      "Electricity purchase error:",
+      error.response?.data || error.message
+    );
+
+    return res.status(error.response?.status || 500).json({
+      status: false,
+      message:
+        error.response?.data?.message ||
+        "Unable to process electricity payment.",
+    });
+  }
+});
+
+
+
+// CABLE TV IUC VERIFICATION
+
+app.get("/api/verify-cable", async (req, res) => {
+  try {
+    const { type, iuc } = req.query;
+
+    if (!type || !iuc) {
+      return res.status(400).json({
+        status: false,
+        message: "Cable TV provider and IUC number are required.",
+      });
+    }
+
+    console.log("Cable TV IUC verification request:", {
+      type,
+      iuc,
     });
 
-  }
+    const response = await axios.get(
+      `${process.env.ONEAPP_BASE_URL}/verifycable`,
+      {
+        params: {
+          type,
+          iuc,
+        },
+        headers: {
+          Authorization: `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
+        },
+      }
+    );
 
+    console.log("1app cable TV verification response:");
+    console.log(response.data);
+
+    return res.json(response.data);
+
+  } catch (error) {
+    console.error(
+      "Cable TV verification error:",
+      error.response?.data || error.message
+    );
+
+    return res.status(error.response?.status || 500).json({
+      status: false,
+      message:
+        error.response?.data?.message ||
+        "Unable to verify cable TV IUC.",
+    });
+  }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
