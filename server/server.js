@@ -731,6 +731,46 @@ app.post("/api/data",
 });
 
 
+// ELECTRICITY BILLERS //
+app.get("/api/electricity-billers", async (req, res) => {
+  try {
+    const response = await axios.get(
+      `${process.env.ONEAPP_BASE_URL}/elect-billers`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
+        },
+      }
+    );
+
+    console.log("Electricity billers response:");
+    console.log(response.data);
+
+    return res.json(response.data);
+  } catch (error) {
+    console.error("Electricity billers error:");
+
+    if (error.response) {
+      console.error(error.response.data);
+
+      return res.status(error.response.status).json({
+        status: false,
+        message:
+          error.response.data?.message ||
+          "Unable to load electricity providers.",
+      });
+    }
+
+    console.error(error.message);
+
+    return res.status(500).json({
+      status: false,
+      message: "Unable to load electricity providers.",
+    });
+  }
+});
+
+
 
 // ELECTRICITY METER VERIFICATION //
 

@@ -1,18 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const ELECTRICITY_PROVIDERS = [
-  { value: "ABUJA", name: "Abuja Electricity" },
-  { value: "IBADAN", name: "Ibadan Electricity" },
-  { value: "IKEJA", name: "Ikeja Electricity" },
-  { value: "EKO", name: "Eko Electricity" },
-  { value: "PH", name: "Port Harcourt Electricity" },
-  { value: "ENUGU", name: "Enugu Electricity" },
-  { value: "KADUNA", name: "Kaduna Electricity" },
-  { value: "JOS", name: "Jos Electricity" },
-  { value: "KANO", name: "Kano Electricity" },
-];
 
 export default function ElectricityForm() {
+
+  const [electricityProviders, setElectricityProviders] = useState([]);
+  const [providersLoading, setProvidersLoading] = useState(false);
 
   const [provider, setProvider] = useState("");
   const [meterNumber, setMeterNumber] = useState("");
@@ -30,6 +22,40 @@ export default function ElectricityForm() {
   const [purchaseDate, setPurchaseDate] = useState(null);
 
   const [message, setMessage] = useState("");
+
+
+  useEffect(() => {
+  async function fetchElectricityProviders() {
+    try {
+      setProvidersLoading(true);
+      setMessage("");
+
+      const response = await fetch(
+        "http://localhost:5000/api/electricity-billers"
+      );
+
+      const data = await response.json();
+
+      console.log("Electricity billers response:", data);
+
+      if (!response.ok || data.status !== true) {
+        setMessage(
+          data.message || "Unable to load electricity providers."
+        );
+        return;
+      }
+
+      setElectricityProviders(data.lists || []);
+    } catch (error) {
+      console.error("Electricity billers error:", error);
+      setMessage("Unable to load electricity providers.");
+    } finally {
+      setProvidersLoading(false);
+    }
+  }
+
+  fetchElectricityProviders(); 
+}, []);
 
 
 
@@ -250,14 +276,15 @@ export default function ElectricityForm() {
                 Select your electricity provider
               </option>
 
-              {ELECTRICITY_PROVIDERS.map((disco) => (
-                <option
-                  key={disco.value}
-                  value={disco.value}
-                >
-                  {disco.name}
-                </option>
-              ))}
+              {providersLoading ? (
+  <option value="">Loading electricity providers...</option>
+  ) : (
+    electricityProviders.map((disco) => (
+    <option key={disco.value} value={disco.value}>
+      {disco.disconame}
+    </option>
+    ))
+  )}
             </select>
 
             <span className="electricity-select-arrow">
