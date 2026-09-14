@@ -32,7 +32,7 @@ export default function CableTVForm() {
       setCustomerInfo(null);
 
       const response = await fetch(
-        `http://localhost:5000/api/verify-cable?type=${provider}&iuc=${iuc.trim()}`
+        `http://oneapp-practice-vtu-backend.onrender.com/api/verify-cable?type=${provider}&iuc=${iuc.trim()}`
       );
 
       const data = await response.json();

@@ -55,7 +55,7 @@ export
 
        = await
         fetch(
-        `http://localhost:5000/api/data-plans?provider=${provider}&datatype=direct`,
+        `http://oneapp-practice-vtu-backend.onrender.com/api/data-plans?provider=${provider}&datatype=direct`,
 
       );
 
@@ -137,7 +137,7 @@ export
        response
         =
          await
-          fetch("http://localhost:5000/api/data",
+          fetch("http://oneapp-practice-vtu-backend.onrender.com/api/data",
              {
         method:
          "POST",

@@ -31,7 +31,7 @@ export default function ElectricityForm() {
       setMessage("");
 
       const response = await fetch(
-        "http://localhost:5000/api/electricity-billers"
+        "http://oneapp-practice-vtu-backend.onrender.com/api/electricity-billers"
       );
 
       const data = await response.json();
@@ -86,7 +86,7 @@ export default function ElectricityForm() {
 
       const response = await fetch(
 
-        `http://localhost:5000/api/verify-electricity?provider=${provider}&meterno=${meterNumber.trim()}`
+        `http://oneapp-practice-vtu-backend.onrender.com/api/verify-electricity?provider=${provider}&meterno=${meterNumber.trim()}`
 
       );
 
@@ -189,7 +189,7 @@ export default function ElectricityForm() {
     setMessage("");
     setPurchaseResult(null);
 
-    const response = await fetch("http://localhost:5000/api/electricity", {
+    const response = await fetch("http://oneapp-practice-vtu-backend.onrender.com/api/electricity", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

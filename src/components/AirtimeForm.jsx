@@ -47,7 +47,7 @@ export default function AirtimeForm() {
 
       const reference = `REF-${Date.now()}`;
 
-      const response = await fetch("http://localhost:5000/api/airtime", {
+      const response = await fetch("http://oneapp-practice-vtu-backend.onrender.com/api/airtime", {
         method: "POST",
 
         headers: {
