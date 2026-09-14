@@ -32,7 +32,7 @@ export default function CableTVForm() {
       setCustomerInfo(null);
 
       const response = await fetch(
-        `http://oneapp-practice-vtu-backend.onrender.com/api/verify-cable?type=${provider}&iuc=${iuc.trim()}`
+        `http://oneapp-practice-vtu-backend.onrender.com/api/verify-cable?type=${provider}&iuc=${iuc.trim()}`,
       );
 
       const data = await response.json();
@@ -40,9 +40,7 @@ export default function CableTVForm() {
       console.log("Cable verification response:", data);
 
       if (!response.ok) {
-        setMessage(
-          data.message || "Unable to verify IUC."
-        );
+        setMessage(data.message || "Unable to verify IUC.");
         return;
       }
 
@@ -50,9 +48,7 @@ export default function CableTVForm() {
         setCustomerInfo(data);
         setMessage("IUC verified successfully.");
       } else {
-        setMessage(
-          data.message || "IUC verification failed."
-        );
+        setMessage(data.message || "IUC verification failed.");
       }
     } catch (error) {
       console.error("Cable verification error:", error);
@@ -65,26 +61,19 @@ export default function CableTVForm() {
 
   return (
     <div className="card cable-card">
-
       {/* HEADER */}
       <div className="cable-header">
         <div>
           <h2>Buy Cable TV</h2>
 
-          <p>
-            Verify your decoder before making a payment.
-          </p>
+          <p>Verify your decoder before making a payment.</p>
         </div>
       </div>
 
       <div className="cable-form">
-
         {/* CABLE PROVIDER */}
         <div className="field">
-
-          <label htmlFor="cable-provider">
-            Cable TV Provider
-          </label>
+          <label htmlFor="cable-provider">Cable TV Provider</label>
 
           <select
             id="cable-provider"
@@ -95,28 +84,19 @@ export default function CableTVForm() {
               setMessage("");
             }}
           >
-            <option value="">
-              Select your cable TV provider
-            </option>
+            <option value="">Select your cable TV provider</option>
 
             {CABLE_PROVIDERS.map((cable) => (
-              <option
-                key={cable.value}
-                value={cable.value}
-              >
+              <option key={cable.value} value={cable.value}>
                 {cable.name}
               </option>
             ))}
           </select>
-
         </div>
 
         {/* IUC NUMBER */}
         <div className="field">
-
-          <label htmlFor="iuc-number">
-            IUC Number
-          </label>
+          <label htmlFor="iuc-number">IUC Number</label>
 
           <input
             id="iuc-number"
@@ -131,18 +111,11 @@ export default function CableTVForm() {
             }}
           />
 
-          <small>
-            Enter the decoder IUC number exactly as shown.
-          </small>
-
+          <small>Enter the decoder IUC number exactly as shown.</small>
         </div>
 
         {/* MESSAGE */}
-        {message && (
-          <div className="form-message">
-            {message}
-          </div>
-        )}
+        {message && <div className="form-message">{message}</div>}
 
         {/* VERIFY BUTTON */}
         <button
@@ -157,43 +130,32 @@ export default function CableTVForm() {
         {/* VERIFIED CUSTOMER */}
         {customerInfo && (
           <div className="cable-verification">
-
             <h3>✓ IUC Verified</h3>
 
             <div className="cable-details">
-
               <p>
-                <strong>Customer Name:</strong>{" "}
-                {customerInfo.details?.custname}
+                <strong>Customer Name:</strong> {customerInfo.details?.custname}
               </p>
 
               <p>
-                <strong>IUC Number:</strong>{" "}
-                {customerInfo.iuc}
+                <strong>IUC Number:</strong> {customerInfo.iuc}
               </p>
 
               <p>
-                <strong>Status:</strong>{" "}
-                {customerInfo.details?.status}
+                <strong>Status:</strong> {customerInfo.details?.status}
               </p>
 
               <p>
-                <strong>Customer Number:</strong>{" "}
-                {customerInfo.details?.custno}
+                <strong>Customer Number:</strong> {customerInfo.details?.custno}
               </p>
 
               <p>
-                <strong>Due Date:</strong>{" "}
-                {customerInfo.details?.dueDate}
+                <strong>Due Date:</strong> {customerInfo.details?.dueDate}
               </p>
-
             </div>
-
           </div>
         )}
-
       </div>
-
     </div>
   );
 }
