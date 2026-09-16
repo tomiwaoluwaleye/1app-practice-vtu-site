@@ -1,735 +1,329 @@
-const express = 
-require("express");
+const express = require("express");
 
-const cors = 
-require("cors");
+const cors = require("cors");
 
-const axios = 
-require("axios");
+const axios = require("axios");
 
-const crypto = 
-require("crypto");
+const crypto = require("crypto");
 
-require("dotenv")
-.config({ path: __dirname + "/.env",
-  override: true,
- });
+require("dotenv").config({ path: __dirname + "/.env", override: true });
 
-const app = 
-express();
+const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-console.log
-("ONEAPP_BASE_URL:", process.env.ONEAPP_BASE_URL);
+console.log("ONEAPP_BASE_URL:", process.env.ONEAPP_BASE_URL);
 
-console.log
-(
+console.log("ONEAPP_SECRET_KEY loaded:", !!process.env.ONEAPP_SECRET_KEY);
 
-  "ONEAPP_SECRET_KEY loaded:",
-  !!process.env.ONEAPP_SECRET_KEY
+console.log("ONEAPP_PUBLIC_KEY loaded:", !!process.env.ONEAPP_PUBLIC_KEY);
 
-);
-
-console.log
-(
-
-  "ONEAPP_PUBLIC_KEY loaded:",
-  !!process.env.ONEAPP_PUBLIC_KEY
-  
-); 
-
-console.log
-(
-
+console.log(
   "PUBLIC KEY LENGTH:",
-  process.env.ONEAPP_PUBLIC_KEY
-    ? process.env.ONEAPP_PUBLIC_KEY.length
-    : 0
-
+  process.env.ONEAPP_PUBLIC_KEY ? process.env.ONEAPP_PUBLIC_KEY.length : 0,
 );
 
-console.log
-(
- 
+console.log(
   "PUBLIC KEY START:",
   process.env.ONEAPP_PUBLIC_KEY
     ? process.env.ONEAPP_PUBLIC_KEY.substring(0, 7)
-    : "NONE"
-
+    : "NONE",
 );
 
-console.log
-(
-  
+console.log(
   "PUBLIC KEY END:",
   process.env.ONEAPP_PUBLIC_KEY
     ? process.env.ONEAPP_PUBLIC_KEY.slice(-5)
-    : "NONE"
-
+    : "NONE",
 );
 
-
-app.use(cors())
-;
+app.use(cors());
 app.use(express.json());
-
 
 // TESTING THE SERVER //
 
-app.get
-("/",
-  
-  
-  (req,
-    res
-  ) => 
-    
-    {
-  res.json
-  
-  ({
+app.get(
+  "/",
 
-    message: "VTU is running",
-
-  });
-
-
-});
-
-
+  (req, res) => {
+    res.json({
+      message: "VTU is running",
+    });
+  },
+);
 
 // AUTHENTICATION TESTING //
 
-app.get
-("/api/test-1app", 
-  async (req, 
-    res
-  ) => {
-    
-  try 
-  {
-    const
-     response
-     = 
-    await
-     axios.get
-     
-    (
-      `${process.env.ONEAPP_BASE_URL}/balance`,
-      {
-
-        headers: {
-          Authorization: `Bearer ${process.env.ONEAPP_SECRET_KEY.trim()}`,
-          "Conetent-Type" : "application/json",
-        
-        },
-
-      }
-    );
-
+app.get("/api/test-1app", async (req, res) => {
+  try {
+    const response = await axios.get(`${process.env.ONEAPP_BASE_URL}/balance`, {
+      headers: {
+        Authorization: `Bearer ${process.env.ONEAPP_SECRET_KEY.trim()}`,
+        "Conetent-Type": "application/json",
+      },
+    });
 
     console.log("1app authentication successful");
 
-    res.json
-    ({
-
+    res.json({
       status: true,
       message: "1app authentication successful",
       data: response.data,
-      
     });
+  } catch (error) {
+    console.error("1app authentication failed");
 
-  }
+    if (error.response) {
+      console.error(error.response.data);
 
-  catch (error) 
-  
-  {
-    console.error
-    (
-
-      "1app authentication failed"
-
-    );
-
-    if 
-    (
-      error.response
-    )
-
-    {
-
-      console.error
-      
-      (error.response.data);
-
-      return res.status
-      (error.response.status).json
-      (
-        {
+      return res.status(error.response.status).json({
         status: false,
         message: "1app authentication failed",
         error: error.response.data,
       });
-
     }
 
-    res.status
-    (500).json
-    
-    ({
+    res.status(500).json({
       status: false,
       message: "Server error",
       error: error.message,
     });
-
   }
-  
 });
 
-
 // DATA PLANS
-app.get
-("/api/data-plans", async (req, res) => {
+app.get("/api/data-plans", async (req, res) => {
+  try {
+    const { provider, datatype } = req.query;
 
-  try 
-  {
-
-    const 
-    { provider, datatype } = req.query;
-
-    
-    if (!provider)
-       {
-
+    if (!provider) {
       return res.status(400).json({
-
         status: false,
         message: "Network provider is required.",
-
       });
-
     }
 
-    console.log("Data Plans request:",
-       {
+    console.log("Data Plans request:", {
       provider,
       datatype,
     });
 
-
-    
-    const response
-     = await axios.get(
-
+    const response = await axios.get(
       `${process.env.ONEAPP_BASE_URL}/getdataplans`,
 
       {
-
         params: {
           provider,
           ...(datatype && { datatype }),
         },
 
-        headers:
-         {
-
-          Authorization:
-            `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
-
+        headers: {
+          Authorization: `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
         },
-
-      }
-
+      },
     );
-
 
     // SEND'S 1APP RESPONSE TO FRONTEND
     console.log("1app data plans response:");
 
     console.log(response.data);
 
-
     return res.json(response.data);
-
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Data Plans error:"
-    );
-
+  } catch (error) {
+    console.error("Data Plans error:");
 
     if (error.response) {
+      console.error(error.response.data);
 
-      console.error(
-        error.response.data
-      );
-
-
-      return res.status(
-        error.response.status
-      ).json({
-
+      return res.status(error.response.status).json({
         status: false,
 
         message:
-          error.response.data?.message ||
-          "Unable to retrieve data plans.",
+          error.response.data?.message || "Unable to retrieve data plans.",
 
         error: error.response.data,
-
-
       });
-
     }
 
-
-    console.error(
-      error.message
-    );
-
+    console.error(error.message);
 
     return res.status(500).json({
-
       status: false,
 
       message: "Unable to retrieve data plans.",
-
     });
-
   }
-
 });
-
-
 
 // PURCHASE AIRTIME//
 
-app.post
-("/api/airtime", async (req, res) => 
-  {
-    
+app.post("/api/airtime", async (req, res) => {
   try {
+    const { phoneno, network_id, amount, reference } = req.body;
 
-    const
-    
-    {
-      
-      phoneno,
-      network_id,
-      amount,
-      reference
-
-    }
-     = req.body;
-
-
-    
     // VALIDATION //
-    
-    if 
-    
-    (!phoneno || !network_id || !amount) 
-    
-    {
 
-      return res.status(400).json
-      
-      ({
-
+    if (!phoneno || !network_id || !amount) {
+      return res.status(400).json({
         status: false,
         message: "Phone number, network and amount are cumpulsory.",
-
       });
-
     }
 
+    if (!/^\d{11}$/.test(String(phoneno))) {
+      return res.status(400).json({
+        status: false,
+        message: "Enter a valid 11-digit phone number.",
+      });
+    }
 
-  
-    const cleanAmount = 
-    String(amount).replace(/,/g, "");
+    const cleanAmount = String(amount).replace(/,/g, "");
 
-
-
-    if 
-    
-    (
-      isNaN
-      (Number
-
-        (
-
-          cleanAmount
-        
-        )) || Number
-        (
-          cleanAmount
-        ) 
-        <= 0) 
-        {
-      return res.status(400).json
-      
-      ({
-
+    if (isNaN(Number(cleanAmount)) || Number(cleanAmount) <= 0) {
+      return res.status(400).json({
         status: false,
         message: "Please enter a valid airtime amount.",
-
       });
-
     }
-
 
     // GENERATE TRANSACTION REFERENCE //
 
-    const 
+    const transactionReference =
+      reference || `VTU-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
 
-    transactionReference =
-      reference
-       ||
-      `VTU-${Date.now()}-${crypto.randomUUID()
-        .slice(0, 8)}`;
+    console.log("Airtime request:");
 
-
-    console.log
-    ("Airtime request:");
-
-
-    console.log
-    
-    ({
-
+    console.log({
       phoneno,
       network_id,
       amount: cleanAmount,
       reference: transactionReference,
-
     });
 
-
-    
     // SEND'S REQUEST TO 1APP //
 
-    const 
-    response = 
-    await 
-    axios.post(
+    const response = await axios.post(
       `${process.env.ONEAPP_BASE_URL}/airtime`,
 
       {
-
         phoneno,
         network_id,
         amount: cleanAmount,
         reference: transactionReference,
-
       },
 
       {
-
-        headers: 
-        {
-
-          Authorization: 
-          `Bearer ${process.env.ONEAPP_SECRET_KEY}`,
-          "Content-Type": 
-          "application/json",
-          
+        headers: {
+          Authorization: `Bearer ${process.env.ONEAPP_SECRET_KEY}`,
+          "Content-Type": "application/json",
         },
-
-      }
-      
+      },
     );
-
-
-   
-
-
-
 
     // SEND'S 1APP RESPONSE TO FRONTEND //
 
-    console.log
+    console.log("1app airtime response:");
 
+    console.log(response.data);
 
-    (
+    return res.json(response.data);
+  } catch (error) {
+    console.error("Airtime purchase error:");
 
-      "1app airtime response:"
+    if (error.response) {
+      console.error(error.response.data);
 
-    );
-
-
-    console.log
-
-    (
-
-      response.data
-      
-    );
-
-
-    return res.json
-
-    (
-
-      response.data
-
-    );
-
-  }
-  
-
-  catch
-
-  (error) 
-  
-  {
-
-    console.error
-
-    (
-
-      "Airtime purchase error:"
-
-    );
-
-
-    if 
-
-    (
-
-      error.response
-
-    )
-
-    
-    {
-
-      console.error
-      (error.response.data);
-
-      return res.status
-      (error.response.status)
-      .json
-
-      ({
-
+      return res.status(error.response.status).json({
         status: false,
-        message:
-          error.response.data?.message ||
-          "Airtime purchase failed.",
+        message: error.response.data?.message || "Airtime purchase failed.",
         error: error.response.data,
-
       });
-
     }
 
+    console.error(error.message);
 
-    console.error
-    (
-      error.message
-    );
-
-    return res.status
-    (500)
-    .json
-    ({
+    return res.status(500).json({
       status: false,
       message: "Unable to process airtime request.",
     });
   }
-
 });
-
-
 
 // THE START SERVER //
 
-app.post("/api/data",
+app.post(
+  "/api/data",
 
-   async (req, res) =>
+  async (req, res) => {
+    try {
+      const { phoneno, network_id, datacode, reference } = req.body;
 
-   {
+      if (!phoneno || !network_id || !datacode) {
+        return res.status(400).json({
+          status: false,
 
-  try
-  
-  {
-   
-    const
-
-     {
-
-       phoneno, network_id, datacode, reference
-
-      
+          message: "Phone number, network and data code are required.",
+        });
       }
 
-       =
-        req.body;
+      const dataType = req.body.dtype || "direct";
 
+      const transactionReference =
+        reference || `VTU-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
 
-    if
-     (!phoneno
-       ||
-        !network_id
-        
-         ||
-
-          !datacode)
-
-           {
-
-      return res.status(400).json({
-
-
-        status:
-         false,
-
-        message:
-         "Phone number, network and data code are required.",
-
-
-      });
-
-
-    }
-
-    const
-
-     dataType
-      =
-
-       req.body.dtype
-
-        ||
-
-         "direct";
-
-    const
-    
-     transactionReference
-      =
-
-      reference
-
-       ||
-
-        `VTU-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
-
-
-    console.log("Data purchase request:",
-       {
-
-      phoneno,
-      network_id,
-      datacode,
-      reference:
-       transactionReference,
-
-    });
-
-    const
-
-     response
-      =
-       await
-        axios.post(
-      `${process.env.ONEAPP_BASE_URL}/databundle`,
-
-
-      {
-
+      console.log("Data purchase request:", {
         phoneno,
         network_id,
         datacode,
-        dtype: dataType,
         reference: transactionReference,
-
-      },
-
-
-      {
-
-        headers:
-
-
-         {
-
-          Authorization:`Bearer ${process.env.ONEAPP_SECRET_KEY}`,
-          "Content-Type":
-           "application/json",
-
-        },
-
-      }
-
-    );
-
-
-    console.log("1app data purchase response:");
-    console.log(response.data);
-
-    
-
-    return res.json(response.data);
-
-  }
-
-
-  catch
-   (error)
-   
-   {
-    console.error("Data purchase error:", error);
-
-
-
-    if
-    
-     (error.response)
-      {
-        
-      console.error(error.response.data);
-      return res.status(error.response.status).json
-      
-      ({
-
-        status:
-         false,
-
-        message:
-         error.response.data?.message
-
-          ||
-           "Data purchase failed.",
-
-        error: error.response.data,
-
-
       });
 
+      const response = await axios.post(
+        `${process.env.ONEAPP_BASE_URL}/databundle`,
 
+        {
+          phoneno,
+          network_id,
+          datacode,
+          dtype: dataType,
+          reference: transactionReference,
+        },
+
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.ONEAPP_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      console.log("1app data purchase response:");
+      console.log(response.data);
+
+      return res.json(response.data);
+    } catch (error) {
+      console.error("Data purchase error:", error);
+
+      if (error.response) {
+        console.error(error.response.data);
+        return res.status(error.response.status).json({
+          status: false,
+
+          message: error.response.data?.message || "Data purchase failed.",
+
+          error: error.response.data,
+        });
+      }
+
+      console.error(error.message);
+      return res.status(500).json({
+        status: false,
+
+        message: "Unable to process data request.",
+      });
     }
-
-    console.error(error.message);
-    return res.status(500).json
-    
-    ({
-
-      status:
-       false,
-
-      message:
-       "Unable to process data request.",
-
-    });
-
-  }
-
-});
-
+  },
+);
 
 // ELECTRICITY BILLERS //
 app.get("/api/electricity-billers", async (req, res) => {
@@ -740,7 +334,7 @@ app.get("/api/electricity-billers", async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
         },
-      }
+      },
     );
 
     console.log("Electricity billers response:");
@@ -770,8 +364,6 @@ app.get("/api/electricity-billers", async (req, res) => {
   }
 });
 
-
-
 // ELECTRICITY METER VERIFICATION //
 
 app.get("/api/verify-electricity", async (req, res) => {
@@ -800,7 +392,7 @@ app.get("/api/verify-electricity", async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
         },
-      }
+      },
     );
 
     console.log("1app electricity verification response:");
@@ -816,8 +408,7 @@ app.get("/api/verify-electricity", async (req, res) => {
       return res.status(error.response.status).json({
         status: false,
         message:
-          error.response.data?.message ||
-          "Unable to verify electricity meter.",
+          error.response.data?.message || "Unable to verify electricity meter.",
         error: error.response.data,
       });
     }
@@ -831,7 +422,6 @@ app.get("/api/verify-electricity", async (req, res) => {
   }
 });
 
-
 app.post("/api/electricity", async (req, res) => {
   try {
     const { meterno, metername, provider, amount, vendtype } = req.body;
@@ -839,7 +429,8 @@ app.post("/api/electricity", async (req, res) => {
     if (!meterno || !metername || !provider || !amount || !vendtype) {
       return res.status(400).json({
         status: false,
-        message: "Meter number, meter name, provider, amount and meter type are required.",
+        message:
+          "Meter number, meter name, provider, amount and meter type are required.",
       });
     }
 
@@ -866,7 +457,7 @@ app.post("/api/electricity", async (req, res) => {
           Authorization: `Bearer ${process.env.ONEAPP_SECRET_KEY}`,
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     console.log("Electricity purchase response:", response.data);
@@ -875,7 +466,7 @@ app.post("/api/electricity", async (req, res) => {
   } catch (error) {
     console.error(
       "Electricity purchase error:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
 
     return res.status(error.response?.status || 500).json({
@@ -886,8 +477,6 @@ app.post("/api/electricity", async (req, res) => {
     });
   }
 });
-
-
 
 // CABLE TV IUC VERIFICATION
 
@@ -917,29 +506,26 @@ app.get("/api/verify-cable", async (req, res) => {
         headers: {
           Authorization: `Bearer ${process.env.ONEAPP_PUBLIC_KEY}`,
         },
-      }
+      },
     );
 
     console.log("1app cable TV verification response:");
     console.log(response.data);
 
     return res.json(response.data);
-
   } catch (error) {
     console.error(
       "Cable TV verification error:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
 
     return res.status(error.response?.status || 500).json({
       status: false,
       message:
-        error.response?.data?.message ||
-        "Unable to verify cable TV IUC.",
+        error.response?.data?.message || "Unable to verify cable TV IUC.",
     });
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

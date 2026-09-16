@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { apiUrl } from "../api";
 
 const CABLE_PROVIDERS = [
   { value: "DSTV", name: "DStv" },
@@ -32,7 +33,9 @@ export default function CableTVForm() {
       setCustomerInfo(null);
 
       const response = await fetch(
-        `http://oneapp-practice-vtu-backend.onrender.com/api/verify-cable?type=${provider}&iuc=${iuc.trim()}`,
+        apiUrl(
+          `/api/verify-cable?type=${provider}&iuc=${encodeURIComponent(iuc.trim())}`,
+        ),
       );
 
       const data = await response.json();

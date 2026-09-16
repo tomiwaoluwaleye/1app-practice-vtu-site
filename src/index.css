@@ -1,392 +1,232 @@
-:root
- {
-  --color-bg:
-   #f4f6f9;
+:root {
+  --color-bg: #f4f6f9;
 
-  --color-card:
-   #ffffff;
+  --color-card: #ffffff;
 
-  --color-primary:
-   #ff69B4;
+  --color-primary: #ff69b4;
 
-  --color-primary-dark:
-   rgb(255, 192, 203);
+  --color-primary-dark: rgb(255, 192, 203);
 
-  --color-text:
-   #1a1f27;
+  --color-text: #1a1f27;
 
-  --color-text-muted:
-   #6b7280;
+  --color-text-muted: #6b7280;
 
-  --color-border:
-   #e2e5ea;
+  --color-border: #e2e5ea;
 
   --radius: 12px;
 
-  --shadow: 0 2px 10px
-   rgba(0, 0, 0, 0.06);
-
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 
-* 
-{
-
-  box-sizing:
-   border-box;
-
+* {
+  box-sizing: border-box;
 }
 
-body
- {
+body {
+  margin: 0;
 
-  margin:
-   0;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
 
-  font-family:
-   -apple-system,
+  background: var(--color-bg);
 
-    "Segoe UI",
-
-     Roboto,
-      sans-serif;
-
-  background:
-   var(--color-bg);
-
-  color:
-   var(--color-text);
-
+  color: var(--color-text);
 }
 
-.app-shell
- {
+.app-shell {
+  max-width: 480px;
 
-  max-width:
-   480px;
-   
-  margin:
-   0 auto;
+  margin: 0 auto;
 
-  min-height:
-   100vh;
+  min-height: 100vh;
 
-  background:
-   var(--color-bg);
-
+  background: var(--color-bg);
 }
 
-.navbar
- {
+.navbar {
+  background: var(--color-primary);
 
-  background:
-   var(--color-primary);
+  color: white;
 
-  color:
-   white;
+  padding: 16px 20px;
 
-  padding:
-   16px 20px;
+  font-weight: 600;
 
-  font-weight:
-   600;
-
-  font-size:
-   18px;
-
+  font-size: 18px;
 }
 
-.dashboard
-
-{
-
+.dashboard {
   padding: 20px;
-
 }
 
-.tabs
- {
-  
-  display:
-   flex;
-
-  gap:
-   8px;
-
-  margin-bottom:
-   20px;
-
-}
-
-.tab-btn
- {
-  
-  flex:
-   1;
-
-  padding:
-   10px;
-   
-  border:
-   1px solid var(--color-border);
-
-  background:
-   var(--color-card);
-
-  border-radius:
-   var(--radius);
-
-  font-weight:
-   600;
-
-  cursor:
-   pointer;
-  color:
-   var(--color-text-muted);
-
-}
-
-.tab-btn.active
- {
-
-  background:
-   var(--color-primary);
-
-  color:
-   white;
-
-  border-color:
-   var(--color-primary);
-
-}
-
-.card
- {
-  background:
-   var(--color-card);
-
-  border-radius:
-   var(--radius);
-
-  box-shadow:
-   var(--shadow);
-
-  padding: 20px;
-
-}
-
-.network-grid
- {
-  display:
-   grid;
-
-  grid-template-columns:
-   repeat(4, 1fr);
+.tabs {
+  display: flex;
 
   gap: 8px;
 
-  margin-bottom:
-   16px;
-
+  margin-bottom: 20px;
 }
 
-.network-btn
- {
-  padding:
-   12px 4px;
-  border-radius:
-   var(--radius);
+.tab-btn {
+  flex: 1;
 
-  border:
-   2px solid var(--color-border);
+  padding: 10px;
 
-  background:
-   white;
+  border: 1px solid var(--color-border);
 
-  font-size:
-   13px;
+  background: var(--color-card);
 
-  font-weight:
-   600;
+  border-radius: var(--radius);
 
-  cursor:
-   pointer;
+  font-weight: 600;
 
-  color:
-   var(--color-text-muted);
-
+  cursor: pointer;
+  color: var(--color-text-muted);
 }
 
-.network-btn.selected
- {
+.tab-btn.active {
+  background: var(--color-primary);
 
-  border-color:
-   var(--color-primary);
+  color: white;
 
-  color:
-   var(--color-primary);
-
-  background:
-   #eaf2ff;
-
+  border-color: var(--color-primary);
 }
 
-.field
- {
+.card {
+  background: var(--color-card);
 
-  margin-bottom:
-   16px;
+  border-radius: var(--radius);
 
+  box-shadow: var(--shadow);
+
+  padding: 20px;
 }
 
-.field
- label
-  {
+.network-grid {
+  display: grid;
 
-  display:
-   block;
+  grid-template-columns: repeat(4, 1fr);
 
-  font-size:
-   13px;
+  gap: 8px;
 
-  font-weight:
-   600;
-
-  margin-bottom:
-   6px;
-
-  color:
-   var(--color-text-muted);
-
+  margin-bottom: 16px;
 }
 
-.field
- input
-  {
+.network-btn {
+  padding: 12px 4px;
+  border-radius: var(--radius);
 
-  width:
-   100%;
+  border: 2px solid var(--color-border);
 
-  padding:
-   12px;
+  background: white;
 
-  border-radius:
-   var(--radius);
+  font-size: 13px;
 
-  border:
-   1px solid var(--color-border);
+  font-weight: 600;
 
-  font-size:
-   15px;
+  cursor: pointer;
 
+  color: var(--color-text-muted);
 }
 
-.amount-grid
- {
+.network-btn.selected {
+  border-color: var(--color-primary);
 
-  display:
-   grid;
+  color: var(--color-primary);
 
-  grid-template-columns:
-   repeat(3, 1fr);
-
-  gap:
-   8px;
-
-  margin-bottom:
-   10px;
-
+  background: #eaf2ff;
 }
 
-.amount-btn
- {
-  padding:
-   10px;
-
-  border-radius:
-   var(--radius);
-
-  border:
-   1px solid var(--color-border);
-
-  background:
-   white;
-
-  font-weight:
-   600;
-
-  cursor:
-   pointer;
-
+.field {
+  margin-bottom: 16px;
 }
 
-.amount-btn.selected
- {
+.field label {
+  display: block;
 
-  border-color:
-   var(--color-primary);
+  font-size: 13px;
 
-  background:
-   #eaf2ff;
+  font-weight: 600;
 
-  color:
-  var(--color-primary);
+  margin-bottom: 6px;
 
+  color: var(--color-text-muted);
 }
 
-.buy-btn
- {
+.field input {
+  width: 100%;
 
-  width:
-   100%;
+  padding: 12px;
 
-  padding:
-   14px;
+  border-radius: var(--radius);
 
-  border:
-   none;
+  border: 1px solid var(--color-border);
 
-  border-radius:
-   var(--radius);
-
-  background:
-   var(--color-primary);
-
-  color:
-   white;
-
-  font-weight:
-   700;
-
-  font-size:
-   15px;
-
-  cursor:
-   pointer;
-
+  font-size: 15px;
 }
 
-.buy-btn:hover
- {
+.amount-grid {
+  display: grid;
 
-  background:
-   var(--color-primary-dark);
+  grid-template-columns: repeat(3, 1fr);
 
+  gap: 8px;
+
+  margin-bottom: 10px;
 }
 
-.placeholder
- {
-  
-  text-align:
-   center;
+.amount-btn {
+  padding: 10px;
 
-  color:
-   var(--color-text-muted);
+  border-radius: var(--radius);
+
+  border: 1px solid var(--color-border);
+
+  background: white;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.amount-btn.selected {
+  border-color: var(--color-primary);
+
+  background: #eaf2ff;
+
+  color: var(--color-primary);
+}
+
+.buy-btn {
+  width: 100%;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: var(--radius);
+
+  background: var(--color-primary);
+
+  color: white;
+
+  font-weight: 700;
+
+  font-size: 15px;
+
+  cursor: pointer;
+}
+
+.buy-btn:hover {
+  background: var(--color-primary-dark);
+}
+
+.placeholder {
+  text-align: center;
+
+  color: var(--color-text-muted);
 
   padding: 40px 0;
-  
 }
-
-
 
 /* =========================================
    PAYMENTS PAGE
@@ -398,7 +238,6 @@ body
   margin: 0 auto;
   padding: 50px 24px 70px;
 }
-
 
 /* HEADER */
 
@@ -430,7 +269,6 @@ body
   font-size: 16px;
 }
 
-
 /* PAYMENT GRID */
 
 .payment-options {
@@ -438,7 +276,6 @@ body
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
-
 
 /* PAYMENT CARD */
 
@@ -472,14 +309,12 @@ body
 
   border-color: #e6b0ca;
 
-  box-shadow:
-    0 15px 35px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
 }
 
 .payment-card:active {
   transform: translateY(-1px);
 }
-
 
 /* CARD TOP */
 
@@ -488,7 +323,6 @@ body
   align-items: center;
   justify-content: space-between;
 }
-
 
 /* ICON */
 
@@ -506,7 +340,6 @@ body
 
   font-size: 25px;
 }
-
 
 /* ARROW */
 
@@ -527,17 +360,14 @@ body
   font-size: 18px;
 
   transition:
-  background 0.2s ease,
-  color 0.2s ease;
-
-
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .payment-card:hover .payment-arrow {
   background: #c00068;
   color: white;
 }
-
 
 /* CARD CONTENT */
 
@@ -561,7 +391,6 @@ body
   line-height: 1.6;
 }
 
-
 /* SUBTLE SERVICE ACCENTS */
 
 .airtime-payment:hover {
@@ -575,7 +404,6 @@ body
 .electricity-payment:hover {
   border-color: #e7c77e;
 }
-
 
 /* SECURITY NOTE */
 
@@ -603,7 +431,6 @@ body
 
   font-size: 13px;
 }
-
 
 /* =========================================================
    PAYMENTS — 1APP INSPIRED MODERN UI
@@ -654,7 +481,6 @@ body
   line-height: 1.6;
 }
 
-
 /* =========================================================
    PAYMENT OPTIONS CONTAINER
 ========================================================= */
@@ -670,7 +496,6 @@ body
 
   box-sizing: border-box;
 }
-
 
 /* =========================================================
    PAYMENT CARD
@@ -708,15 +533,13 @@ body
 
   border-color: #f2a5cb;
 
-  box-shadow:
-    0 18px 45px rgba(192, 0, 104, 0.10);
+  box-shadow: 0 18px 45px rgba(192, 0, 104, 0.1);
 }
 
 .payment-card:focus-visible {
   outline: 3px solid rgba(192, 0, 104, 0.18);
   outline-offset: 3px;
 }
-
 
 /* =========================================================
    CARD TOP
@@ -772,7 +595,6 @@ body
   color: white;
 }
 
-
 /* =========================================================
    CARD CONTENT
 ========================================================= */
@@ -801,7 +623,6 @@ body
   font-size: 14px;
   line-height: 1.7;
 }
-
 
 /* =========================================================
    SECURITY MESSAGE
@@ -837,7 +658,6 @@ body
   font-size: 14px;
 }
 
-
 /* =========================================================
    SERVICE PANEL
 ========================================================= */
@@ -852,7 +672,6 @@ body
 
   backdrop-filter: blur(4px);
 }
-
 
 /* =========================================================
    RIGHT SIDE SERVICE PANEL
@@ -878,9 +697,8 @@ body
 
   background: #ffffff;
 
-  box-shadow:
-    -20px 0 60px rgba(0, 0, 0, 0.15); 
-    animation: servicePanelIn 0.3s ease forwards;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.15);
+  animation: servicePanelIn 0.3s ease forwards;
 }
 
 @keyframes servicePanelIn {
@@ -892,7 +710,6 @@ body
     transform: translateX(0);
   }
 }
-
 
 /* =========================================================
    SERVICE PANEL HEADER
@@ -929,7 +746,6 @@ body
   font-weight: 700;
 }
 
-
 /* =========================================================
    BACK BUTTON
 ========================================================= */
@@ -960,7 +776,6 @@ body
   color: #970052;
 }
 
-
 /* =========================================================
    PANEL CONTENT
 ========================================================= */
@@ -984,7 +799,6 @@ body
   margin: 0;
 }
 
-
 /* =========================================================
    IMPORTANT:
    PREVENT FORMS FROM PUSHING OUT OF PANEL
@@ -1001,13 +815,11 @@ body
   max-width: 100%;
 }
 
-
 /* =========================================================
    TABLET
 ========================================================= */
 
 @media (max-width: 900px) {
-
   .payments-page {
     padding: 55px 25px 80px;
   }
@@ -1020,16 +832,13 @@ body
     grid-template-columns: repeat(2, minmax(0, 1fr));
     max-width: 760px;
   }
-
 }
-
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 600px) {
-
   .payments-page {
     padding: 40px 18px 70px;
   }
@@ -1081,16 +890,13 @@ body
   .service-panel-content {
     padding: 25px 20px 50px;
   }
-
 }
-
 
 /* =========================================================
    SMALL PHONES
 ========================================================= */
 
 @media (max-width: 400px) {
-
   .payments-page {
     padding: 32px 15px 60px;
   }
@@ -1103,10 +909,7 @@ body
     min-height: 175px;
     padding: 20px;
   }
-
 }
-
-
 
 /* =========================================================
    AIRTIME FORM
@@ -1116,7 +919,6 @@ body
   width: 100%;
   background: #ffffff;
 }
-
 
 /* =========================================================
    NETWORK SELECTOR
@@ -1167,7 +969,6 @@ body
   color: #c00068;
 }
 
-
 /* =========================================================
    FORM FIELDS
 ========================================================= */
@@ -1211,14 +1012,23 @@ body
 .airtime-form input:focus {
   border-color: #c00068;
 
-  box-shadow:
-    0 0 0 3px rgba(192, 0, 104, 0.08);
+  box-shadow: 0 0 0 3px rgba(192, 0, 104, 0.08);
 }
 
 .airtime-form input::placeholder {
   color: #aaa;
 }
 
+.airtime-form input[aria-invalid="true"] {
+  border-color: #c00068;
+}
+
+.airtime-form .phone-error {
+  margin: 6px 0 0;
+  color: #c00068;
+  font-size: 12px;
+  line-height: 1.4;
+}
 
 /* =========================================================
    PROCEED BUTTON
@@ -1260,7 +1070,6 @@ body
   opacity: 0.65;
 }
 
-
 /* =========================================================
    FORM MESSAGE
 ========================================================= */
@@ -1281,7 +1090,6 @@ body
   line-height: 1.5;
 }
 
-
 /* =========================================================
    QUICK TOP UP
 ========================================================= */
@@ -1299,7 +1107,6 @@ body
   font-weight: 800;
 }
 
-
 /* =========================================================
    QUICK TOP UP GRID
 ========================================================= */
@@ -1311,7 +1118,6 @@ body
 
   gap: 10px;
 }
-
 
 /* =========================================================
    QUICK TOP UP BUTTON
@@ -1351,8 +1157,7 @@ body
 
   background: #fffafd;
 
-  box-shadow:
-    0 6px 18px rgba(192, 0, 104, 0.08);
+  box-shadow: 0 6px 18px rgba(192, 0, 104, 0.08);
 }
 
 .airtime-form .quick-topup-btn:active {
@@ -1363,7 +1168,6 @@ body
   border-color: #c00068;
   background: #fff5fa;
 }
-
 
 /* =========================================================
    QUICK TOP UP TEXT
@@ -1385,7 +1189,6 @@ body
   font-weight: 600;
 }
 
-
 /* =========================================================
    TRANSACTION RESULT
 ========================================================= */
@@ -1400,8 +1203,7 @@ body
 
   background: #ffffff;
 
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
 }
 
 .airtime-form .transaction-result h3 {
@@ -1431,13 +1233,106 @@ body
   color: #222;
 }
 
+.transaction-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(20, 20, 20, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.transaction-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 301;
+  width: min(430px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  margin: 0;
+  padding: 28px 24px 24px;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.transaction-modal-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e9faf1;
+  color: #19a957;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.transaction-modal-icon.failure {
+  background: #fff0f0;
+  color: #c00068;
+}
+
+.transaction-modal > h3 {
+  margin: 0;
+  text-align: center;
+}
+
+.transaction-status-message {
+  margin: 10px 0 20px;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.transaction-details {
+  border-top: 1px solid #eeeeee;
+}
+
+.transaction-details p {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  padding: 11px 0;
+  border-bottom: 1px solid #eeeeee;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.transaction-details strong {
+  flex-shrink: 0;
+  color: #222;
+}
+
+.transaction-done-button {
+  width: 100%;
+  height: 48px;
+  margin-top: 22px;
+  border: none;
+  border-radius: 12px;
+  background: #c00068;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.transaction-done-button:hover {
+  background: #a8005b;
+}
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 600px) {
-
   .airtime-form .network-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1445,16 +1340,13 @@ body
   .airtime-form .quick-topup-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
 }
-
 
 /* =========================================================
    SMALL PHONES
 ========================================================= */
 
 @media (max-width: 360px) {
-
   .airtime-form .quick-topup-grid {
     grid-template-columns: 1fr;
   }
@@ -1462,9 +1354,7 @@ body
   .airtime-form .network-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
 }
-
 
 /* =========================================================
    ELECTRICITY — PREMIUM SERVICE UI
@@ -1500,7 +1390,6 @@ body
   color: #777777;
 }
 
-
 /* =========================================================
    FORM
    ========================================================= */
@@ -1521,7 +1410,6 @@ body
   font-weight: 700;
   color: #252525;
 }
-
 
 /* =========================================================
    SELECT
@@ -1564,7 +1452,6 @@ body
   box-shadow: 0 0 0 3px rgba(192, 0, 104, 0.08);
 }
 
-
 /* =========================================================
    INPUT
    ========================================================= */
@@ -1606,7 +1493,6 @@ body
   color: #aaaaaa;
 }
 
-
 /* =========================================================
    HELPER TEXT
    ========================================================= */
@@ -1620,7 +1506,6 @@ body
   font-size: 12px;
   line-height: 1.5;
 }
-
 
 /* =========================================================
    MESSAGE
@@ -1641,7 +1526,6 @@ body
   font-weight: 600;
   line-height: 1.45;
 }
-
 
 /* =========================================================
    ACTION BUTTONS
@@ -1690,7 +1574,6 @@ body
   cursor: not-allowed;
   box-shadow: none;
 }
-
 
 /* =========================================================
    VERIFIED METER CARD
@@ -1757,7 +1640,6 @@ body
   font-weight: 700;
 }
 
-
 /* =========================================================
    AMOUNT
    ========================================================= */
@@ -1766,7 +1648,6 @@ body
   font-size: 17px;
   font-weight: 700;
 }
-
 
 /* =========================================================
    PURCHASE RESULT
@@ -1827,13 +1708,11 @@ body
   font-weight: 700;
 }
 
-
 /* =========================================================
    MOBILE
    ========================================================= */
 
 @media (max-width: 600px) {
-
   .electricity-header h2 {
     font-size: 25px;
   }
@@ -1851,11 +1730,7 @@ body
   .purchase-result {
     padding: 18px;
   }
-
 }
-
-
-
 
 /* =========================================================
    ELECTRICITY PROVIDER SELECT
@@ -1926,8 +1801,6 @@ body
   color: #c00068;
 }
 
-
-
 /* =========================================================
    METER VERIFIED — REFINED CARD
    ========================================================= */
@@ -1944,7 +1817,6 @@ body
 
   box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
 }
-
 
 /* HEADER */
 
@@ -1993,7 +1865,6 @@ body
   line-height: 1.4;
 }
 
-
 /* DETAILS */
 
 .meter-details {
@@ -2041,11 +1912,9 @@ body
   line-height: 1.45;
 }
 
-
 /* MOBILE */
 
 @media (max-width: 600px) {
-
   .meter-verification {
     padding: 17px;
   }
@@ -2057,11 +1926,7 @@ body
   .meter-detail-row strong {
     max-width: 60%;
   }
-
 }
-
-
-
 
 /* =========================================================
    ELECTRICITY AMOUNT
@@ -2122,7 +1987,6 @@ body
   box-shadow: none;
 }
 
-
 /* =========================================================
    QUICK AMOUNT
    ========================================================= */
@@ -2177,7 +2041,6 @@ body
   transform: scale(0.98);
 }
 
-
 /* MOBILE */
 
 @media (max-width: 600px) {
@@ -2185,8 +2048,6 @@ body
     grid-template-columns: repeat(2, 1fr);
   }
 }
-
-
 
 /* =========================================================
    AIRTIME RECEIPT
@@ -2200,7 +2061,6 @@ body
 
   background: #ffffff;
 }
-
 
 /* SUCCESS */
 
@@ -2261,7 +2121,6 @@ body
   font-size: 13px;
 }
 
-
 /* DETAILS */
 
 .airtime-receipt-details {
@@ -2316,7 +2175,6 @@ body
   overflow-wrap: anywhere;
 }
 
-
 /* MESSAGE */
 
 .airtime-receipt-message {
@@ -2329,7 +2187,6 @@ body
   text-align: center;
 }
 
-
 /* ACTIONS */
 
 .airtime-receipt-actions {
@@ -2337,7 +2194,6 @@ body
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-
 
 /* SHARE */
 
@@ -2347,12 +2203,7 @@ body
   border: 1px solid #e5d0dc;
   border-radius: 13px;
 
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #fff7fb 55%,
-    #f9d8e9 100%
-  );
+  background: linear-gradient(135deg, #ffffff 0%, #fff7fb 55%, #f9d8e9 100%);
 
   color: #c00068;
 
@@ -2368,13 +2219,12 @@ body
 }
 
 .airtime-share-button:hover {
-  box-shadow: 0 7px 18px rgba(192, 0, 104, 0.10);
+  box-shadow: 0 7px 18px rgba(192, 0, 104, 0.1);
 }
 
 .airtime-share-button:active {
   transform: scale(0.98);
 }
-
 
 /* DONE */
 
@@ -2384,12 +2234,7 @@ body
   border: 1px solid #c00068;
   border-radius: 13px;
 
-  background: linear-gradient(
-    135deg,
-    #c00068 0%,
-    #e45b9d 52%,
-    #fff0f7 150%
-  );
+  background: linear-gradient(135deg, #c00068 0%, #e45b9d 52%, #fff0f7 150%);
 
   color: #ffffff;
 
@@ -2407,18 +2252,16 @@ body
 }
 
 .airtime-done-button:hover {
-  box-shadow: 0 10px 24px rgba(192, 0, 104, 0.20);
+  box-shadow: 0 10px 24px rgba(192, 0, 104, 0.2);
 }
 
 .airtime-done-button:active {
   transform: scale(0.98);
 }
 
-
 /* MOBILE */
 
 @media (max-width: 480px) {
-
   .airtime-receipt-actions {
     grid-template-columns: 1fr;
   }
@@ -2430,11 +2273,7 @@ body
   .airtime-receipt-amount {
     font-size: 28px;
   }
-
 }
-
-
-
 
 .success-backdrop {
   position: fixed;
@@ -2500,12 +2339,7 @@ body
   border: none;
   border-radius: 12px;
 
-  background: linear-gradient(
-    135deg,
-    #c00068 0%,
-    #df4c96 55%,
-    #f8d8e8 100%
-  );
+  background: linear-gradient(135deg, #c00068 0%, #df4c96 55%, #f8d8e8 100%);
 
   color: #ffffff;
 
@@ -2550,11 +2384,7 @@ body
 
   border-radius: 50%;
 
-  background: linear-gradient(
-    135deg,
-    #c70068,
-    #f7d8e8
-  );
+  background: linear-gradient(135deg, #c70068, #f7d8e8);
 
   color: #ffffff;
 
@@ -2613,12 +2443,7 @@ body
   border: 1px solid #c70068;
   border-radius: 12px;
 
-  background: linear-gradient(
-    135deg,
-    #ffffff 0%,
-    #ffffff 45%,
-    #f7d8e8 100%
-  );
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 45%, #f7d8e8 100%);
 
   color: #c70068;
 

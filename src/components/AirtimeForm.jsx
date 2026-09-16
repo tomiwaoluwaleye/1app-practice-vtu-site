@@ -1,6 +1,7 @@
 import { useState } from "react";
 import NetworkSelector from "./NetworkSelector";
 import { createPortal } from "react-dom";
+import { apiUrl } from "../api";
 
 const QUICK_TOP_UP = [
   { amount: 100, cashback: 1 },
@@ -14,26 +15,64 @@ const QUICK_TOP_UP = [
 export default function AirtimeForm() {
   const [network, setNetwork] = useState(null);
   const [phone, setPhone] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [transaction, setTransaction] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
+  const [transactionType, setTransactionType] = useState(null);
+  const [submittedReference, setSubmittedReference] = useState("");
+
+  function validatePhone(value) {
+    if (!value) {
+      return "Please enter a phone number.";
+    }
+
+    if (!/^\d{11}$/.test(value)) {
+      return "Enter a valid 11-digit phone number.";
+    }
+
+    return "";
+  }
+
+  function handlePhoneChange(e) {
+    const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 11);
+
+    setPhone(digitsOnly);
+
+    if (phoneTouched) {
+      setPhoneError(validatePhone(digitsOnly));
+    }
+  }
+
+  function handlePhoneBlur() {
+    setPhoneTouched(true);
+    setPhoneError(validatePhone(phone));
+  }
+
+  function closeTransactionModal() {
+    setTransaction(null);
+    setTransactionType(null);
+    setShowReceipt(false);
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     setMessage("");
-    setTransaction(null);
 
-    // Validation
-    if (!network) {
-      setMessage("Please select a network.");
+    const currentPhoneError = validatePhone(phone);
+    setPhoneTouched(true);
+    setPhoneError(currentPhoneError);
+
+    if (currentPhoneError) {
       return;
     }
 
-    if (!phone) {
-      setMessage("Please enter a phone number.");
+    if (!network) {
+      setMessage("Please select a network.");
       return;
     }
 
@@ -46,8 +85,9 @@ export default function AirtimeForm() {
       setLoading(true);
 
       const reference = `REF-${Date.now()}`;
+      setSubmittedReference(reference);
 
-      const response = await fetch("http://oneapp-practice-vtu-backend.onrender.com/api/airtime", {
+      const response = await fetch(apiUrl("/api/airtime"), {
         method: "POST",
 
         headers: {
@@ -67,33 +107,41 @@ export default function AirtimeForm() {
       console.log("Server response:", data);
 
       if (!response.ok) {
-        setMessage(
-          data.message || "Airtime purchase failed. Please try again.",
-        );
-
+        setTransaction(data);
+        setTransactionType("failure");
+        setShowReceipt(true);
         return;
       }
 
       if (data.status === true) {
         setTransaction(data);
+        setTransactionType("success");
         setShowReceipt(false);
-
-        setMessage(data.message || "Airtime purchase successful!");
       } else {
-        setTransaction(null);
-
-        setMessage(
-          data.message || "Airtime purchase failed. Please try again.",
-        );
+        setTransaction(data);
+        setTransactionType("failure");
+        setShowReceipt(true);
       }
     } catch (error) {
       console.error("Request error:", error);
 
-      setMessage("Unable to connect to the server.");
+      setTransaction({
+        status: false,
+        message: "Unable to connect to the server.",
+      });
+      setTransactionType("failure");
+      setShowReceipt(true);
     } finally {
       setLoading(false);
     }
   }
+
+  const transactionReference =
+    transaction?.data?.reference ||
+    transaction?.data?.txref ||
+    transaction?.reference ||
+    transaction?.txref ||
+    submittedReference;
 
   return (
     <form className="airtime-form" onSubmit={handleSubmit}>
@@ -110,10 +158,16 @@ export default function AirtimeForm() {
 
         <input
           type="tel"
+          inputMode="numeric"
+          maxLength={11}
           placeholder="e.g. 09134807909"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={handlePhoneChange}
+          onBlur={handlePhoneBlur}
+          aria-invalid={Boolean(phoneError)}
         />
+
+        {phoneError && <p className="phone-error">{phoneError}</p>}
       </div>
 
       {/* QUICK TOP UP */}
@@ -163,76 +217,144 @@ export default function AirtimeForm() {
 
       {message && <p className="form-message">{message}</p>}
 
-
       {/* SUCCESS NOTIFICATION */}
       {transaction &&
-      !showReceipt &&
-      createPortal(
-    <>
-      <div className="success-backdrop"></div>
+        !showReceipt &&
+        createPortal(
+          <>
+            <div className="success-backdrop"></div>
 
-      <div className="transaction-success">
-        <div className="success-dot">
-          ✓
-        </div>
+            <div className="transaction-success">
+              <div className="success-dot">✓</div>
 
-        <h3>
-          Airtime purchased
-        </h3>
+              <h3>Airtime purchased</h3>
 
-        <p>
-          ₦{Number(amount).toLocaleString()}.00 airtime is on its way to
-          <br />
-          {phone}
-        </p>
+              <p>
+                ₦{Number(amount).toLocaleString()}.00 airtime is on its way to
+                <br />
+                {phone}
+              </p>
 
-        <button
-          type="button"
-          className="view-receipt-btn"
-          onClick={() => setShowReceipt(true)}
-        >
-          VIEW RECEIPT
-        </button>
-      </div>
-    </>,
-    
-    document.body
+              <button
+                type="button"
+                className="view-receipt-btn"
+                onClick={() => setShowReceipt(true)}
+              >
+                VIEW RECEIPT
+              </button>
+            </div>
+          </>,
 
-  )}
+          document.body,
+        )}
 
-      {/* TRANSACTION RESULT */}
-      {transaction && showReceipt && (
-        <div className="transaction-result">
-          <h3>Airtime Purchase Successful</h3>
+      {/* TRANSACTION RESULT MODAL */}
+      {transaction &&
+        showReceipt &&
+        createPortal(
+          <>
+            <div className="transaction-modal-backdrop"></div>
 
-          <p>
-            <strong>Network:</strong> {network}
-          </p>
+            <div
+              className="transaction-result transaction-modal"
+              role="dialog"
+              aria-modal="true"
+            >
+              <div className={`transaction-modal-icon ${transactionType}`}>
+                {transactionType === "success" ? "✓" : "!"}
+              </div>
 
-          <p>
-            <strong>Phone:</strong> {phone}
-          </p>
+              <h3>
+                {transactionType === "success"
+                  ? "Airtime Purchase Successful"
+                  : "Airtime Purchase Failed"}
+              </h3>
 
-          <p>
-            <strong>Amount:</strong> ₦{Number(amount).toLocaleString()}
-          </p>
+              <p className="transaction-status-message">
+                {transaction.message ||
+                  (transactionType === "success"
+                    ? "Your airtime purchase was successful."
+                    : "Airtime purchase failed. Please try again.")}
+              </p>
 
-          <p>
-            <strong>Transaction Reference:</strong>{" "}
-            {transaction.txref || transaction.reference || "N/A"}
-          </p>
+              <div className="transaction-details">
+                <p>
+                  <strong>Status:</strong>
+                  {transactionType === "success" ? "Successful" : "Failed"}
+                </p>
 
-          <p>
-            <strong>Amount Charged:</strong> ₦
-            {Number(transaction.charged || 0).toLocaleString()}
-          </p>
+                <p>
+                  <strong>Network:</strong>
+                  {network}
+                </p>
 
-          <p>
-            <strong>Remaining Balance:</strong> ₦
-            {Number(transaction.newbal || 0).toLocaleString()}
-          </p>
-        </div>
-      )}
+                <p>
+                  <strong>Phone:</strong>
+                  {phone}
+                </p>
+
+                <p>
+                  <strong>Amount:</strong>₦
+                  {Number(transaction.amount || amount).toLocaleString()}
+                </p>
+
+                {(transaction.fee !== undefined ||
+                  transaction.fees !== undefined) && (
+                  <p>
+                    <strong>Fee:</strong>₦
+                    {Number(
+                      transaction.fee ?? transaction.fees,
+                    ).toLocaleString()}
+                  </p>
+                )}
+
+                {transactionReference && (
+                  <p>
+                    <strong>Reference:</strong>
+                    {transactionReference}
+                  </p>
+                )}
+
+                {transaction.charged !== undefined && (
+                  <p>
+                    <strong>Amount Charged:</strong>₦
+                    {Number(transaction.charged).toLocaleString()}
+                  </p>
+                )}
+
+                {transaction.newbal !== undefined && (
+                  <p>
+                    <strong>Remaining Balance:</strong>₦
+                    {Number(transaction.newbal).toLocaleString()}
+                  </p>
+                )}
+
+                {(transaction.date || transaction.transdate) && (
+                  <p>
+                    <strong>Date:</strong>
+                    {transaction.date || transaction.transdate}
+                  </p>
+                )}
+
+                {transaction.time && (
+                  <p>
+                    <strong>Time:</strong>
+                    {transaction.time}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="button"
+                className="transaction-done-button"
+                onClick={closeTransactionModal}
+              >
+                DONE
+              </button>
+            </div>
+          </>,
+          document.body,
+        )}
     </form>
   );
 }

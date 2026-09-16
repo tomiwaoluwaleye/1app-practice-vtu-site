@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import NetworkSelector from "./NetworkSelector";
+import { apiUrl } from "../api";
 
 export default function Data() {
   const [network, setNetwork] = useState(null);
@@ -21,7 +22,9 @@ export default function Data() {
       setMessage("");
 
       const response = await fetch(
-        `http://oneapp-practice-vtu-backend.onrender.com/api/data-plans?provider=${provider}&datatype=direct`,
+        apiUrl(
+          `/api/data-plans?provider=${encodeURIComponent(provider)}&datatype=direct`,
+        ),
       );
 
       const data = await response.json();
@@ -66,22 +69,19 @@ export default function Data() {
       setLoading(true);
       setMessage("");
 
-      const response = await fetch(
-        "http://oneapp-practice-vtu-backend.onrender.com/api/data",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            phoneno: phone,
-            network_id: network,
-            datacode: selectedPlan.datacode,
-            dtype: selectedPlan.dtype || "direct",
-          }),
+      const response = await fetch(apiUrl("/api/data"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+
+        body: JSON.stringify({
+          phoneno: phone,
+          network_id: network,
+          datacode: selectedPlan.datacode,
+          dtype: selectedPlan.dtype || "direct",
+        }),
+      });
 
       const data = await response.json();
 

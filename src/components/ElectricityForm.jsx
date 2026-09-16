@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiUrl } from "../api";
 
 export default function ElectricityForm() {
   const [electricityProviders, setElectricityProviders] = useState([]);
@@ -27,9 +28,7 @@ export default function ElectricityForm() {
         setProvidersLoading(true);
         setMessage("");
 
-        const response = await fetch(
-          "http://oneapp-practice-vtu-backend.onrender.com/api/electricity-billers",
-        );
+        const response = await fetch(apiUrl("/api/electricity-billers"));
 
         const data = await response.json();
 
@@ -69,7 +68,9 @@ export default function ElectricityForm() {
       setMeterInfo(null);
 
       const response = await fetch(
-        `http://oneapp-practice-vtu-backend.onrender.com/api/verify-electricity?provider=${provider}&meterno=${meterNumber.trim()}`,
+        apiUrl(
+          `/api/verify-electricity?provider=${encodeURIComponent(provider)}&meterno=${encodeURIComponent(meterNumber.trim())}`,
+        ),
       );
 
       const data = await response.json();
@@ -130,22 +131,19 @@ export default function ElectricityForm() {
       setMessage("");
       setPurchaseResult(null);
 
-      const response = await fetch(
-        "http://oneapp-practice-vtu-backend.onrender.com/api/electricity",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            meterno: meterNumber.trim(),
-            metername: meterInfo.name,
-            provider: provider,
-            amount: amount,
-            vendtype: meterInfo.vendtype,
-          }),
+      const response = await fetch(apiUrl("/api/electricity"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          meterno: meterNumber.trim(),
+          metername: meterInfo.name,
+          provider: provider,
+          amount: amount,
+          vendtype: meterInfo.vendtype,
+        }),
+      });
 
       const data = await response.json();
 
