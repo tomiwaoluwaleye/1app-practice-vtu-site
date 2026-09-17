@@ -23,7 +23,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/balance");
+        const response = await fetch( "https://oneapp-practice-vtu-backend.onrender.com/api/balance");
 
         const data = await response.json();
 

@@ -132,3 +132,6 @@ export default function Payments() {
     </>,
     document.body,
   )}
+  </div>
+  );
+}
