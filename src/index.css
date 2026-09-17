@@ -1347,7 +1347,7 @@ body {
 .transaction-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 300;
+  z-index: 20000;
   background: rgba(16, 16, 16, 0.68);
   backdrop-filter: blur(7px);
 }
@@ -1356,7 +1356,7 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  z-index: 301;
+  z-index: 20001;
   width: min(460px, calc(100vw - 32px));
   max-height: calc(100vh - 28px);
   overflow-y: auto;
@@ -2437,7 +2437,7 @@ body {
   position: fixed;
   inset: 0;
 
-  z-index: 200;
+  z-index: 20000;
 
   background: rgba(16, 16, 16, 0.68);
 
@@ -2558,7 +2558,7 @@ body {
 
   transform: translate(-50%, -50%);
 
-  z-index: 201;
+  z-index: 20001;
 
   width: min(430px, calc(100vw - 32px));
 
@@ -3324,9 +3324,6 @@ body {
   }
 }
 
-
-
-
 /* =========================================================
    RECENT TRANSACTIONS — FIXED DASHBOARD LAYOUT
 ========================================================= */
@@ -3522,7 +3519,6 @@ body {
     padding: 15px;
   }
 }
-
 
 /*
    SERVICE PANEL — ALWAYS ABOVE DASHBOARD */
