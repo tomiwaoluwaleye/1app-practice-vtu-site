@@ -11,6 +11,13 @@ require("dotenv").config({ path: __dirname + "/.env", override: true });
 const app = express();
 
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = [
+  "http://localhost:5173",
+  ...(process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "")
+    .split(",")
+    .map((origin) => origin.trim().replace(/\/$/, ""))
+    .filter(Boolean),
+];
 
 console.log("ONEAPP_BASE_URL:", process.env.ONEAPP_BASE_URL);
 
@@ -37,7 +44,21 @@ console.log(
     : "NONE",
 );
 
-app.use(cors());
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Origin is not allowed by CORS."));
+  },
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 
 // TESTING THE SERVER //
@@ -523,6 +544,74 @@ app.get("/api/verify-cable", async (req, res) => {
       status: false,
       message:
         error.response?.data?.message || "Unable to verify cable TV IUC.",
+    });
+  }
+});
+
+
+// CABLE TV PURCHASE
+
+app.post("/api/cabletv", async (req, res) => {
+  try {
+    const {
+      tvno,
+      tv,
+      amount,
+      custname,
+      custno,
+      reference,
+    } = req.body;
+
+    if (!tvno || !tv || !amount || !custname || !custno) {
+      return res.status(400).json({
+        status: false,
+        message:
+          "IUC number, TV provider, amount, customer name and customer number are required.",
+      });
+    }
+
+    console.log("Cable TV purchase request:", {
+      tvno,
+      tv,
+      amount,
+      custname,
+      custno,
+      reference,
+    });
+
+    const response = await axios.post(
+      `${process.env.ONEAPP_BASE_URL}/cabletv`,
+      {
+        tvno,
+        tv,
+        amount,
+        custname,
+        custno,
+        ...(reference && { reference }),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.ONEAPP_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    console.log("1app cable TV purchase response:");
+    console.log(response.data);
+
+    return res.json(response.data);
+  } catch (error) {
+    console.error(
+      "Cable TV purchase error:",
+      error.response?.data || error.message,
+    );
+
+    return res.status(error.response?.status || 500).json({
+      status: false,
+      message:
+        error.response?.data?.message ||
+        "Unable to process cable TV payment.",
     });
   }
 });

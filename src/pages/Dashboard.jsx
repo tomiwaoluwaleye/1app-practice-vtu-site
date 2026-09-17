@@ -1,16 +1,110 @@
+
 import Payments from "./Payments";
 
-
 export default function Dashboard() {
-
   return (
+    <div className="dashboard-shell">
+      <header className="dashboard-topbar">
+        <div className="dashboard-logo">
+          1app
+        </div>
 
-    <div className="dashboard">
+        <div className="dashboard-top-links">
+          <button className="top-link active">Dashboard</button>
+          <button className="top-link">Transactions</button>
 
-      <Payments />
+          <button className="profile-button">
+            <span>👤</span>
+          </button>
+        </div>
+      </header>
 
+      <div className="dashboard-layout">
+        <aside className="dashboard-sidebar">
+          <nav className="sidebar-nav">
+            <button className="sidebar-item active">
+              <span className="sidebar-icon">⌂</span>
+              <span>Dashboard</span>
+            </button>
+
+            <button className="sidebar-item">
+              <span className="sidebar-icon">▦</span>
+              <span>Services</span>
+            </button>
+
+            <button className="sidebar-item">
+              <span className="sidebar-icon">₦</span>
+              <span>Wallet</span>
+            </button>
+
+            <button className="sidebar-item">
+              <span className="sidebar-icon">↕</span>
+              <span>Transactions</span>
+            </button>
+
+            <button className="sidebar-item">
+              <span className="sidebar-icon">◉</span>
+              <span>Account</span>
+            </button>
+          </nav>
+        </aside>
+
+        <main className="dashboard-main">
+          <div className="dashboard-welcome">
+            <span className="dashboard-eyebrow">DASHBOARD</span>
+
+            <h1>Good morning Tomiwa</h1>
+
+            <p>What would you like to do today?</p>
+          </div>
+
+          <section className="wallet-card">
+            <div>
+              <span className="wallet-label">Wallet Balance</span>
+
+              <strong>₦0.00</strong>
+            </div>
+
+            <button className="fund-wallet-button">
+              + Fund Wallet
+            </button>
+          </section>
+
+          <section className="dashboard-services">
+            <div className="dashboard-section-heading">
+              <div>
+                <span className="dashboard-eyebrow">SERVICES</span>
+                <h2>What would you like to pay for?</h2>
+              </div>
+            </div>
+
+            <Payments />
+          </section>
+
+          <section className="recent-transactions">
+            <div className="recent-header">
+              <div>
+                <span className="dashboard-eyebrow">ACTIVITY</span>
+                <h2>Recent Transactions</h2>
+              </div>
+
+              <button className="view-all-button">
+                View all →
+              </button>
+            </div>
+
+            <div className="empty-transactions">
+              <div className="empty-transactions-icon">↕</div>
+
+              <h3>No transactions yet</h3>
+
+              <p>
+                Your recent transactions will appear here.
+              </p>
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
-
   );
-
 }

@@ -227,7 +227,7 @@ export default function AirtimeForm() {
             <div className="transaction-success">
               <div className="success-dot">✓</div>
 
-              <h3>Airtime purchased</h3>
+              <h3>Airtime payment successful</h3>
 
               <p>
                 ₦{Number(amount).toLocaleString()}.00 airtime is on its way to

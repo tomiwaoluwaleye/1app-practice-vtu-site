@@ -1,102 +1,125 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { createPortal } from "react-dom";
 import { apiUrl } from "../api";
 
-export default function ElectricityForm() {
-  const [electricityProviders, setElectricityProviders] = useState([]);
-  const [providersLoading, setProvidersLoading] = useState(false);
+const ELECTRICITY_PROVIDERS = [
+  { value: "IKEJA", name: "Ikeja Electric" },
+  { value: "EKO", name: "Eko Electric" },
+  { value: "ABUJA", name: "Abuja Electricity" },
+  { value: "IBADAN", name: "Ibadan Electricity" },
+  { value: "KANO", name: "Kano Electricity" },
+  { value: "PH", name: "Port Harcourt Electricity" },
+  { value: "ENUGU", name: "Enugu Electricity" },
+  { value: "KADUNA", name: "Kaduna Electricity" },
+  { value: "JOS", name: "Jos Electricity" },
+];
 
+export default function ElectricityForm() {
   const [provider, setProvider] = useState("");
   const [meterNumber, setMeterNumber] = useState("");
 
   const [meterInfo, setMeterInfo] = useState(null);
-
-  const [loading, setLoading] = useState(false);
+  const [meterError, setMeterError] = useState("");
 
   const [amount, setAmount] = useState("");
+  const [amountError, setAmountError] = useState("");
 
   const [purchasing, setPurchasing] = useState(false);
 
   const [purchaseResult, setPurchaseResult] = useState(null);
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const [purchaseDate, setPurchaseDate] = useState(null);
 
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    async function fetchElectricityProviders() {
-      try {
-        setProvidersLoading(true);
-        setMessage("");
+  function closeElectricityModal() {
+    setPurchaseResult(null);
+    setPurchaseDate(null);
+    setShowReceipt(false);
+  }
 
-        const response = await fetch(apiUrl("/api/electricity-billers"));
-
-        const data = await response.json();
-
-        console.log("Electricity billers response:", data);
-
-        if (!response.ok || data.status !== true) {
-          setMessage(data.message || "Unable to load electricity providers.");
-          return;
-        }
-
-        setElectricityProviders(data.lists || []);
-      } catch (error) {
-        console.error("Electricity billers error:", error);
-        setMessage("Unable to load electricity providers.");
-      } finally {
-        setProvidersLoading(false);
-      }
-    }
-
-    fetchElectricityProviders();
-  }, []);
-
-  async function verifyMeter() {
-    if (!provider) {
-      setMessage("Please select your electricity provider.");
-      return;
-    }
-
-    if (!meterNumber.trim()) {
-      setMessage("Please enter your meter number.");
+  async function verifyMeterNumber(number, selectedProvider) {
+    if (!selectedProvider || !number || number.length !== 11) {
+      setMeterInfo(null);
+      setMeterError(number ? "Invalid meter number" : "");
       return;
     }
 
     try {
-      setLoading(true);
+      setMeterError("");
       setMessage("");
-      setMeterInfo(null);
+      setPurchaseResult(null);
 
       const response = await fetch(
-        apiUrl(
-          `/api/verify-electricity?provider=${encodeURIComponent(provider)}&meterno=${encodeURIComponent(meterNumber.trim())}`,
-        ),
+        `${apiUrl("/api/verify-electricity")}?provider=${encodeURIComponent(selectedProvider)}&meterno=${encodeURIComponent(number)}`,
       );
 
       const data = await response.json();
 
-      console.log("Meter verification response:", data);
-
-      if (!response.ok) {
-        setMessage(data.message || "Unable to verify meter.");
-
+      if (!response.ok || data.status === false) {
+        setMeterInfo(null);
+        setMeterError(
+          data.message ||
+            data.error?.message ||
+            "Meter number could not be verified for this provider.",
+        );
         return;
       }
 
-      if (data.status === true) {
-        setMeterInfo(data);
+      const verifiedMeter = {
+        name: data.name,
+        address: data.address,
+        vendtype: data.vendtype,
+        minvend: data.minvend,
+        maxvend: data.maxvend,
+      };
 
-        setMessage("Meter verified successfully.");
-      } else {
-        setMessage(data.message || "Meter verification failed.");
-      }
+      setMeterInfo(verifiedMeter);
+      setMeterError("");
+      setAmount("");
+      setAmountError("");
     } catch (error) {
-      console.error("Meter verification error:", error);
-
-      setMessage("Unable to connect to the server.");
-    } finally {
-      setLoading(false);
+      console.error("Electricity verification error:", error);
+      setMeterInfo(null);
+      setMeterError("Unable to verify meter number. Please try again.");
     }
+  }
+
+  function handleProviderChange(event) {
+    const selectedProvider = event.target.value;
+    setProvider(selectedProvider);
+    setMeterInfo(null);
+    setMessage("");
+
+    if (meterNumber.length === 11 && selectedProvider) {
+      verifyMeterNumber(meterNumber, selectedProvider);
+    } else {
+      setMeterError("");
+    }
+  }
+
+  function handleMeterChange(event) {
+    const digitsOnly = event.target.value.replace(/\D/g, "").slice(0, 11);
+    setMeterNumber(digitsOnly);
+    setMeterInfo(null);
+    setMessage("");
+
+    if (!digitsOnly) {
+      setMeterError("");
+    } else if (digitsOnly.length < 11) {
+      setMeterError("Invalid meter number");
+    } else if (!provider) {
+      setMeterError("Please select your electricity provider.");
+    } else {
+      verifyMeterNumber(digitsOnly, provider);
+    }
+  }
+
+  function handleAmountChange(event) {
+    const digitsOnly = event.target.value.replace(/\D/g, "");
+    setAmount(digitsOnly);
+    setAmountError("");
   }
 
   async function buyElectricity() {
@@ -106,21 +129,21 @@ export default function ElectricityForm() {
     }
 
     if (!amount.trim()) {
-      setMessage("Please enter an amount.");
+      setAmountError("Please enter an amount.");
       return;
     }
 
     const numericAmount = Number(amount);
 
     if (numericAmount < Number(meterInfo.minvend)) {
-      setMessage(
+      setAmountError(
         `Minimum amount is ₦${Number(meterInfo.minvend).toLocaleString()}.`,
       );
       return;
     }
 
     if (numericAmount > Number(meterInfo.maxvend)) {
-      setMessage(
+      setAmountError(
         `Maximum amount is ₦${Number(meterInfo.maxvend).toLocaleString()}.`,
       );
       return;
@@ -130,6 +153,8 @@ export default function ElectricityForm() {
       setPurchasing(true);
       setMessage("");
       setPurchaseResult(null);
+      setPurchaseDate(null);
+      setShowReceipt(false);
 
       const response = await fetch(apiUrl("/api/electricity"), {
         method: "POST",
@@ -157,7 +182,8 @@ export default function ElectricityForm() {
       if (data.status === true) {
         setPurchaseResult(data);
         setPurchaseDate(new Date());
-        setMessage("Electricity payment successful.");
+        setMessage("");
+        setShowReceipt(false);
       } else {
         setMessage(data.message || "Electricity payment failed.");
       }
@@ -188,26 +214,22 @@ export default function ElectricityForm() {
           <label htmlFor="electricity-provider">Electricity Provider</label>
 
           <div className="electricity-select-wrapper">
+            <span className="electricity-select-icon" aria-hidden="true">
+              &#9889;
+            </span>
+
             <select
               id="electricity-provider"
               value={provider}
-              onChange={(e) => {
-                setProvider(e.target.value);
-                setMeterInfo(null);
-                setMessage("");
-              }}
+              onChange={handleProviderChange}
             >
               <option value="">Select your electricity provider</option>
 
-              {providersLoading ? (
-                <option value="">Loading electricity providers...</option>
-              ) : (
-                electricityProviders.map((disco) => (
-                  <option key={disco.value} value={disco.value}>
-                    {disco.disconame}
-                  </option>
-                ))
-              )}
+              {ELECTRICITY_PROVIDERS.map((disco) => (
+                <option key={disco.value} value={disco.value}>
+                  {disco.name}
+                </option>
+              ))}
             </select>
 
             <span className="electricity-select-arrow">↓</span>
@@ -223,34 +245,19 @@ export default function ElectricityForm() {
             id="meter-number"
             type="text"
             inputMode="numeric"
+            maxLength={11}
             placeholder="Enter your meter number"
             value={meterNumber}
-            onChange={(e) => {
-              setMeterNumber(e.target.value);
-
-              setMeterInfo(null);
-
-              setMessage("");
-            }}
+            onChange={handleMeterChange}
           />
 
           <small>Enter the meter number exactly as shown on your meter.</small>
+          {meterError && <div className="form-message">{meterError}</div>}
         </div>
 
         {/* MESSAGE */}
 
         {message && <div className="form-message">{message}</div>}
-
-        {/* VERIFY BUTTON */}
-
-        <button
-          type="button"
-          onClick={verifyMeter}
-          disabled={loading}
-          className="electricity-action"
-        >
-          {loading ? "Verifying..." : "Verify Meter"}
-        </button>
 
         {/* VERIFIED METER */}
 
@@ -290,16 +297,18 @@ export default function ElectricityForm() {
 
             <input
               id="electricity-amount"
-              type="number"
+              type="text"
+              inputMode="numeric"
               placeholder={`Minimum ₦${Number(meterInfo.minvend).toLocaleString()}`}
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={handleAmountChange}
             />
 
             <small>
               Enter between ₦{Number(meterInfo.minvend).toLocaleString()} and ₦
               {Number(meterInfo.maxvend).toLocaleString()}.
             </small>
+            {amountError && <div className="form-message">{amountError}</div>}
           </div>
         )}
 
@@ -314,52 +323,110 @@ export default function ElectricityForm() {
           </button>
         )}
 
-        {purchaseResult && (
-          <div className="purchase-result">
-            <h3>✓ Payment Successful</h3>
+        {purchaseResult &&
+          !showReceipt &&
+          createPortal(
+            <>
+              <div className="success-backdrop"></div>
 
-            <p>
-              <strong>Receiptant:</strong> {meterInfo.name}
-            </p>
+              <div className="transaction-success electricity-success-modal">
+                <div className="success-dot">✓</div>
 
-            <p>
-              <strong>Amount:</strong> ₦
-              {Number(purchaseResult.charged).toLocaleString()}
-            </p>
-
-            <p>
-              <strong>Transaction Reference:</strong> {purchaseResult.txref}
-            </p>
-
-            {purchaseResult.token && (
-              <p>
-                <strong>Electricity Token:</strong> {purchaseResult.token}
-              </p>
-            )}
-
-            {purchaseDate && (
-              <>
-                <p>
-                  <strong>Date:</strong>{" "}
-                  {purchaseDate.toLocaleDateString("en-NG", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
+                <h3>Electricity payment successful</h3>
 
                 <p>
-                  <strong>Time:</strong>{" "}
-                  {purchaseDate.toLocaleTimeString("en-NG", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
+                  Your electricity payment was successful and your token is
+                  ready.
                 </p>
-              </>
-            )}
-          </div>
-        )}
+
+                <button
+                  type="button"
+                  className="view-receipt-btn"
+                  onClick={() => setShowReceipt(true)}
+                >
+                  VIEW RECEIPT
+                </button>
+              </div>
+            </>,
+            document.body,
+          )}
+
+        {purchaseResult &&
+          showReceipt &&
+          createPortal(
+            <>
+              <div className="transaction-modal-backdrop"></div>
+
+              <div
+                className="transaction-result transaction-modal electricity-receipt-modal"
+                role="dialog"
+                aria-modal="true"
+              >
+                <div className="transaction-modal-icon">✓</div>
+
+                <h3>Electricity payment receipt</h3>
+
+                <p className="transaction-status-message">
+                  Your electricity payment was successful.
+                </p>
+
+                <div className="transaction-details">
+                  <p>
+                    <strong>Receiptant:</strong>
+                    {meterInfo.name}
+                  </p>
+
+                  <p>
+                    <strong>Amount:</strong>₦
+                    {Number(purchaseResult.charged).toLocaleString()}
+                  </p>
+
+                  <p>
+                    <strong>Transaction Reference:</strong>
+                    {purchaseResult.txref}
+                  </p>
+
+                  {purchaseResult.token && (
+                    <p>
+                      <strong>Electricity Token:</strong>
+                      {purchaseResult.token}
+                    </p>
+                  )}
+
+                  {purchaseDate && (
+                    <>
+                      <p>
+                        <strong>Date:</strong>
+                        {purchaseDate.toLocaleDateString("en-NG", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </p>
+
+                      <p>
+                        <strong>Time:</strong>
+                        {purchaseDate.toLocaleTimeString("en-NG", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      </p>
+                    </>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  className="transaction-done-button"
+                  onClick={closeElectricityModal}
+                >
+                  DONE
+                </button>
+              </div>
+            </>,
+            document.body,
+          )}
       </div>
     </div>
   );

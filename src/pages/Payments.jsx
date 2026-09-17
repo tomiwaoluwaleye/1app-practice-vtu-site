@@ -27,31 +27,26 @@ const PAYMENT_SERVICES = [
   },
 
   {
-  id: "cable",
-  icon: "📺",
-  title: "Cable TV",
-  description: "Subscribe to DStv, GOtv and Startimes.",
+    id: "cable",
+    icon: "📺",
+    title: "Cable TV",
+    description: "Subscribe to DStv, GOtv and Startimes.",
   },
-
 ];
 
 export default function Payments() {
   const [paymentType, setPaymentType] = useState(null);
 
   const selectedService = PAYMENT_SERVICES.find(
-    (service) => service.id === paymentType
+    (service) => service.id === paymentType,
   );
 
   return (
     <div className="payments-page">
-
       {/* PAGE HEADER */}
 
       <div className="payments-header">
-
-        <span className="section-label">
-          PAYMENTS
-        </span>
+        <span className="section-label">PAYMENTS</span>
 
         <h1>
           What would you like
@@ -59,19 +54,13 @@ export default function Payments() {
           to pay for?
         </h1>
 
-        <p>
-          Choose a service below to get started.
-        </p>
-
+        <p>Choose a service below to get started.</p>
       </div>
-
 
       {/* PAYMENT CARDS */}
 
       <div className="payment-options">
-
         {PAYMENT_SERVICES.map((service) => (
-
           <button
             key={service.id}
             type="button"
@@ -80,74 +69,43 @@ export default function Payments() {
             }`}
             onClick={() => setPaymentType(service.id)}
           >
-
             <div className="payment-card-top">
+              <div className="payment-icon">{service.icon}</div>
 
-              <div className="payment-icon">
-                {service.icon}
-              </div>
-
-              <span className="payment-arrow">
-                →
-              </span>
-
+              <span className="payment-arrow">→</span>
             </div>
-
 
             <div className="payment-card-content">
+              <h3>{service.title}</h3>
 
-              <h3>
-                {service.title}
-              </h3>
-
-              <p>
-                {service.description}
-              </p>
-
+              <p>{service.description}</p>
             </div>
-
           </button>
-
         ))}
-
       </div>
-
 
       {/* SECURITY MESSAGE */}
 
       <div className="payment-security">
+        <span>🔒</span>
 
-        <span>
-          🔒
-        </span>
-
-        <p>
-          Your transactions are processed securely.
-        </p>
-
+        <p>Your transactions are processed securely.</p>
       </div>
-
 
       {/* BACKDROP */}
 
       {paymentType && (
-
         <div
           className="service-backdrop"
           onClick={() => setPaymentType(null)}
         />
-
       )}
-
 
       {/* SERVICE PANEL */}
 
       {paymentType && (
-
         <aside className="service-panel">
-
           <div className="service-panel-header">
-
             <button
               type="button"
               className="back-button"
@@ -156,37 +114,20 @@ export default function Payments() {
               ← Back
             </button>
 
-            <span>
-              {selectedService?.title}
-            </span>
-
+            <span>{selectedService?.title}</span>
           </div>
-
 
           <div className="service-panel-content">
+            {paymentType === "airtime" && <AirtimeForm />}
 
-            {paymentType === "airtime" && (
-              <AirtimeForm />
-            )}
+            {paymentType === "data" && <Data />}
 
-            {paymentType === "data" && (
-              <Data />
-            )}
+            {paymentType === "electricity" && <ElectricityForm />}
 
-            {paymentType === "electricity" && (
-              <ElectricityForm />
-            )}
-
-            {paymentType === "cable" && (
-              <CableTVForm />
-            )}
-
+            {paymentType === "cable" && <CableTVForm />}
           </div>
-
         </aside>
-
       )}
-
     </div>
   );
 }
