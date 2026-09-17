@@ -8,14 +8,6 @@ Navbar()
  
 {
   
-  return (
-    
-    <div className="navbar">
-
-      1app
-
-    </div>
-
-  );
+  return null;
 
 }
