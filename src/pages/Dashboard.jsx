@@ -53,7 +53,7 @@ export default function Dashboard() {
           <div className="dashboard-welcome">
             <span className="dashboard-eyebrow">DASHBOARD</span>
 
-            <h1>Good morning Tomiwa</h1>
+            <h1>Good morning Tomi</h1>
 
             <p>What would you like to do today?</p>
           </div>
