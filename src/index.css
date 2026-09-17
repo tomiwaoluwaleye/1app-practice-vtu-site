@@ -3323,3 +3323,270 @@ body {
     gap: 8px;
   }
 }
+
+
+
+
+/* =========================================================
+   RECENT TRANSACTIONS — FIXED DASHBOARD LAYOUT
+========================================================= */
+
+.recent-transactions {
+  position: relative !important;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 40px;
+  z-index: 1 !important;
+  clear: both;
+}
+
+/* Keep the Activity section inside the Dashboard flow */
+.dashboard-main {
+  position: relative;
+  z-index: 1;
+}
+
+.recent-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.recent-header h2 {
+  margin: 6px 0 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #171717;
+}
+
+.empty-transactions {
+  position: relative !important;
+  width: 100%;
+  min-height: 180px;
+  padding: 45px 25px;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  z-index: 1 !important;
+}
+
+.empty-transactions-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+  background: #fff0f7;
+  color: #c00068;
+  font-size: 20px;
+}
+
+.empty-transactions h3 {
+  margin: 0 0 6px;
+  color: #222;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.empty-transactions p {
+  margin: 0;
+  color: #888;
+  font-size: 14px;
+}
+
+/* =========================================================
+   TRANSACTION LIST
+========================================================= */
+
+.transaction-list {
+  width: 100%;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 18px 20px;
+
+  border-bottom: 1px solid #eeeeee;
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.transaction-item-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.transaction-item-icon {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+  background: #fff0f7;
+  color: #c00068;
+  font-size: 20px;
+}
+
+.transaction-item-info {
+  min-width: 0;
+}
+
+.transaction-item-info h4 {
+  margin: 0 0 4px;
+  color: #222;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.transaction-item-info p {
+  margin: 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.transaction-item-right {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.transaction-item-amount {
+  margin: 0 0 4px;
+  color: #222;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.transaction-item-status {
+  margin: 0;
+  color: #0a9f5a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/*
+   ACTIVITY MUST NEVER SIT ABOVE THE SERVICE PANEL */
+
+.recent-transactions,
+.recent-transactions *,
+.empty-transactions,
+.transaction-list {
+  z-index: 1 !important;
+}
+
+/* Service panel remains above normal dashboard content */
+.service-panel {
+  z-index: 100 !important;
+}
+
+.service-backdrop {
+  z-index: 90 !important;
+}
+
+@media (max-width: 600px) {
+  .recent-transactions {
+    margin-top: 28px;
+  }
+
+  .recent-header {
+    align-items: flex-start;
+  }
+
+  .transaction-item {
+    padding: 15px;
+  }
+}
+
+
+/*
+   SERVICE PANEL — ALWAYS ABOVE DASHBOARD */
+
+.service-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+
+  z-index: 9990 !important;
+
+  background: rgba(0, 0, 0, 0.45);
+
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.service-panel {
+  position: fixed !important;
+
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  z-index: 10000 !important;
+
+  width: min(480px, 94vw);
+  height: 100vh;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: #ffffff;
+
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.18);
+
+  animation: servicePanelIn 0.3s ease forwards;
+}
+
+@keyframes servicePanelIn {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Keep the panel header above its own content */
+.service-panel-header {
+  position: sticky !important;
+
+  top: 0 !important;
+
+  z-index: 10 !important;
+}
+
+/* 
+   DASHBOARD ACTIVITY STAYS UNDER SERVICE PANEL*/
+
+.dashboard-main,
+.recent-transactions,
+.empty-transactions,
+.transaction-list {
+  position: relative;
+  z-index: 1;
+}

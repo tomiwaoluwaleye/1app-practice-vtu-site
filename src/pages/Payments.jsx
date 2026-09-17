@@ -92,42 +92,43 @@ export default function Payments() {
         <p>Your transactions are processed securely.</p>
       </div>
 
-      {/* BACKDROP */}
+      {/* =========================================================
+    SERVICE PANEL PORTAL
+========================================================= */}
 
-      {paymentType && (
-        <div
-          className="service-backdrop"
-          onClick={() => setPaymentType(null)}
-        />
-      )}
+{paymentType &&
+  createPortal(
+    <>
+      {/* DIM THE ENTIRE DASHBOARD */}
+      <div
+        className="service-backdrop"
+        onClick={() => setPaymentType(null)}
+      />
 
-      {/* SERVICE PANEL */}
+      {/* SERVICE FORM ABOVE THE DIMMED PAGE */}
+      <aside className="service-panel">
+        <div className="service-panel-header">
+          <button
+            type="button"
+            className="back-button"
+            onClick={() => setPaymentType(null)}
+          >
+            ← Back
+          </button>
 
-      {paymentType && (
-        <aside className="service-panel">
-          <div className="service-panel-header">
-            <button
-              type="button"
-              className="back-button"
-              onClick={() => setPaymentType(null)}
-            >
-              ← Back
-            </button>
+          <span>{selectedService?.title}</span>
+        </div>
 
-            <span>{selectedService?.title}</span>
-          </div>
+        <div className="service-panel-content">
+          {paymentType === "airtime" && <AirtimeForm />}
 
-          <div className="service-panel-content">
-            {paymentType === "airtime" && <AirtimeForm />}
+          {paymentType === "data" && <Data />}
 
-            {paymentType === "data" && <Data />}
+          {paymentType === "electricity" && <ElectricityForm />}
 
-            {paymentType === "electricity" && <ElectricityForm />}
-
-            {paymentType === "cable" && <CableTVForm />}
-          </div>
-        </aside>
-      )}
-    </div>
-  );
-}
+          {paymentType === "cable" && <CableTVForm />}
+        </div>
+      </aside>
+    </>,
+    document.body,
+  )}

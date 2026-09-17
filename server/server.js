@@ -144,6 +144,8 @@ app.get("/api/data-plans", async (req, res) => {
       },
     );
 
+
+
     // SEND'S 1APP RESPONSE TO FRONTEND
     console.log("1app data plans response:");
 
@@ -166,6 +168,8 @@ app.get("/api/data-plans", async (req, res) => {
       });
     }
 
+    
+
     console.error(error.message);
 
     return res.status(500).json({
@@ -175,6 +179,48 @@ app.get("/api/data-plans", async (req, res) => {
     });
   }
 });
+
+
+
+
+
+// BALANCE CHECK
+
+app.get("/api/balance", async (req, res) => {
+  try {
+    const response = await axios.get(
+      `${process.env.ONEAPP_BASE_URL}/balance`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.ONEAPP_SECRET_KEY.trim()}`,
+        },
+      },
+    );
+
+    console.log("1app balance response:");
+    console.log(response.data);
+
+    return res.json(response.data);
+  } catch (error) {
+    console.error(
+      "Balance error:",
+      error.response?.data || error.message,
+    );
+
+    return res.status(error.response?.status || 500).json({
+      status: false,
+      message:
+        error.response?.data?.message ||
+        "Unable to retrieve wallet balance.",
+    });
+  }
+});
+
+
+
+
+
+
 
 // PURCHASE AIRTIME//
 

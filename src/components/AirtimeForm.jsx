@@ -12,6 +12,13 @@ const QUICK_TOP_UP = [
   { amount: 5000, cashback: 50 },
 ];
 
+const NETWORK_NAMES = {
+  1: "GLO",
+  2: "MTN",
+  3: "AIRTEL",
+  4: "9MOBILE",
+};
+
 export default function AirtimeForm() {
   const [network, setNetwork] = useState(null);
   const [phone, setPhone] = useState("");
@@ -113,15 +120,70 @@ export default function AirtimeForm() {
         return;
       }
 
-      if (data.status === true) {
-        setTransaction(data);
-        setTransactionType("success");
-        setShowReceipt(false);
-      } else {
+     if (data.status === true) {
+  setTransaction(data);
+  setTransactionType("success");
+  setShowReceipt(false);
+
+  /* SAVE SUCCESSFUL AIRTIME TRANSACTION */
+
+  const successfulTransaction = {
+    type: "Airtime",
+    network:  NETWORK_NAMES[network] || network,
+    phone: phone,
+    amount: Number(amount),
+    status: "Successful",
+    reference:
+      data?.data?.reference ||
+      data?.data?.txref ||
+      data?.reference ||
+      data?.txref ||
+      reference,
+    date: new Date().toISOString(),
+  };
+
+  try {
+    const existingTransactions =
+      JSON.parse(
+        localStorage.getItem("oneapp_transactions")
+      ) || [];
+
+    const updatedTransactions = [
+      successfulTransaction,
+      ...existingTransactions,
+    ];
+
+    localStorage.setItem(
+      "oneapp_transactions",
+      JSON.stringify(updatedTransactions)
+    );
+
+    /* Tell Dashboard immediately */
+    window.dispatchEvent(
+      new CustomEvent(
+        "oneapp:transaction-added",
+        {
+          detail: successfulTransaction,
+        }
+      )
+    );
+
+  } 
+  
+  catch (storageError) {
+    console.error(
+      "Unable to save transaction:",
+      storageError
+    );
+  }}
+      
+      else {
         setTransaction(data);
         setTransactionType("failure");
         setShowReceipt(true);
       }
+
+
     } catch (error) {
       console.error("Request error:", error);
 
@@ -129,9 +191,12 @@ export default function AirtimeForm() {
         status: false,
         message: "Unable to connect to the server.",
       });
+
       setTransactionType("failure");
       setShowReceipt(true);
-    } finally {
+    } 
+    
+    finally {
       setLoading(false);
     }
   }
